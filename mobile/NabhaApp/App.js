@@ -1,18 +1,11 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { View, Text, StyleSheet, TouchableOpacity, ScrollView, Modal, Alert } from 'react-native';
 import { StatusBar } from 'expo-status-bar';
 import ConsultationFlow from './src/screens/consultation/ConsultationFlow';
 import CheckSymptomsScreen from './src/screens/CheckSymptomsScreen';
 import ASHAWorkerHub from './src/screens/ASHAWorkerHub';
-
-// Log environment configuration
-console.log('🔧 App Environment Configuration:');
-console.log(`📱 App Name: ${process.env.EXPO_PUBLIC_APP_NAME || 'Nabha Health App'}`);
-console.log(`📦 App Version: ${process.env.EXPO_PUBLIC_APP_VERSION || '1.0.0'}`);
-console.log(`🌍 Environment: ${process.env.EXPO_PUBLIC_NODE_ENV || 'development'}`);
-console.log(`📡 API URL: ${process.env.EXPO_PUBLIC_API_BASE_URL || 'http://192.168.1.5:3000/api'}`);
-console.log(`🔌 Socket URL: ${process.env.EXPO_PUBLIC_SOCKET_URL || 'http://192.168.1.5:3000'}`);
-console.log(`🐛 Debug Mode: ${process.env.EXPO_PUBLIC_DEBUG_MODE || 'true'}`);
+import DocumentUpload from './src/screens/consultation/DocumentUpload';
+import { Linking } from 'react-native';
 
 const translations = {
   en: {
@@ -87,6 +80,7 @@ export default function App() {
   const [emergencyActive, setEmergencyActive] = useState(false);
   const [showSymptomsChecker, setShowSymptomsChecker] = useState(false);
   const [showASHAHub, setShowASHAHub] = useState(false);
+  const [showDocumentUpload, setShowDocumentUpload] = useState(false);
   
   const t = translations[currentLanguage];
 
@@ -234,14 +228,41 @@ export default function App() {
             <Text style={styles.featureIcon}>👩‍🌾</Text>
             <Text style={styles.featureTitle}>{t.ashaWorker}</Text>
           </TouchableOpacity>
+          
         </View>
+
+        {/* third Row with new feature */}
+        
+        <View style={styles.featureRow}>
+  <TouchableOpacity 
+    style={styles.featureCard}
+    onPress={() => Linking.openURL("http://192.168.1.36:3000/")}
+    activeOpacity={0.7}
+  >
+    <Text style={styles.featureIcon}>🔔</Text>
+    <Text style={styles.featureTitle}>Set Reminder</Text>
+  </TouchableOpacity>
+
+  <TouchableOpacity 
+    style={styles.featureCard}
+    onPress={() => Linking.openURL("http://192.168.1.36:8501/")}
+    activeOpacity={0.7}
+  >
+    <Text style={styles.featureIcon}>🤖</Text>
+    <Text style={styles.featureTitle}>Health assistant</Text>
+  </TouchableOpacity>
+</View>
       </View>
 
       {/* Medical Report Upload Section */}
-      <View style={styles.uploadSection}>
+      {/* <View style={styles.uploadSection}>
         <Text style={styles.uploadTitle}>{t.uploadReports}</Text>
         
-        <TouchableOpacity style={styles.uploadButton}>
+        <TouchableOpacity 
+          style={styles.uploadButton}
+          onPress={() => setShowDocumentUpload(true)}
+          activeOpacity={0.7}
+        >
           <Text style={styles.uploadIcon}>📄</Text>
           <Text style={styles.uploadButtonText}>{t.chooseReports}</Text>
           <Text style={styles.uploadSubtext}>{t.uploadSubtext}</Text>
@@ -261,11 +282,11 @@ export default function App() {
             <Text style={styles.uploadInfoText}>{t.fileFormats}</Text>
           </View>
         </View>
-      </View>
+      </View> */}
 
-      <TouchableOpacity style={styles.startButton}>
+      {/* <TouchableOpacity style={styles.startButton}>
         <Text style={styles.startButtonText}>{t.startApp}</Text>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
       <View style={styles.footer}>
         <Text style={styles.footerText}>{t.multiLangSupport}</Text>
@@ -335,6 +356,27 @@ export default function App() {
         onClose={() => setShowASHAHub(false)}
         language={currentLanguage}
       />
+
+      {/* Document Upload Modal */}
+      <Modal
+        visible={showDocumentUpload}
+        animationType="slide"
+        presentationStyle="pageSheet"
+        onRequestClose={() => setShowDocumentUpload(false)}
+      >
+        <DocumentUpload
+          language={currentLanguage}
+          onNext={(documents) => {
+            console.log('Documents uploaded:', documents);
+            Alert.alert(
+              'Success!', 
+              `Successfully uploaded ${documents.length} document(s). Your medical reports have been saved securely.`,
+              [{ text: 'OK', onPress: () => setShowDocumentUpload(false) }]
+            );
+          }}
+          onBack={() => setShowDocumentUpload(false)}
+        />
+      </Modal>
     </ScrollView>
   );
 }

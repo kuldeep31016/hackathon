@@ -5,8 +5,8 @@ import { logout } from '../store/slices/authSlice';
 import io from 'socket.io-client';
 
 // Use environment variables from .env file
-const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://192.168.1.5:3000/api';
-const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL || 'http://192.168.1.5:3000';
+const API_BASE_URL = process.env.EXPO_PUBLIC_API_BASE_URL || 'http://192.168.1.6:3000/api';
+const SOCKET_URL = process.env.EXPO_PUBLIC_SOCKET_URL || 'http://192.168.1.6:3000';
 const API_TIMEOUT = parseInt(process.env.EXPO_PUBLIC_API_TIMEOUT) || 30000;
 const SOCKET_TIMEOUT = parseInt(process.env.EXPO_PUBLIC_SOCKET_TIMEOUT) || 5000;
 
@@ -116,6 +116,14 @@ export const authAPI = {
   updateProfile: (profileData) => api.put('/auth/profile', profileData),
   changePassword: (currentPassword, newPassword) => 
     api.put('/auth/change-password', { currentPassword, newPassword }),
+};
+
+// Patient Auth API
+export const patientAuthAPI = {
+  register: (patientData) => api.post('/auth/patient/register', patientData),
+  login: (credentials) => api.post('http://localhost:3000/api/auth/patient/login', credentials),
+  verifyOTP: (phone, otp) => api.post('/auth/patient/verify-otp', { phone, otp }),
+  resendOTP: (phone) => api.post('/auth/patient/resend-otp', { phone }),
 };
 
 // Patient API

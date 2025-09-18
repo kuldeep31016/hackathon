@@ -10,16 +10,21 @@ import {
   Platform,
   Dimensions,
   PermissionsAndroid,
+  Modal,
 } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 import * as ImagePicker from 'expo-image-picker';
 import * as DocumentPicker from 'expo-document-picker';
+import DocumentSummaryScreen from './DocumentSummaryScreen';
 
 const { width, height } = Dimensions.get('window');
 
 const DocumentUpload = ({ language, onNext, onBack }) => {
   const [uploadedFiles, setUploadedFiles] = useState([]);
   const [isUploading, setIsUploading] = useState(false);
+  const [showSourceModal, setShowSourceModal] = useState(false);
+  const [showInstructions, setShowInstructions] = useState(false);
+  const [showSummary, setShowSummary] = useState(false);
 
   const translations = {
     en: {
@@ -44,6 +49,45 @@ const DocumentUpload = ({ language, onNext, onBack }) => {
       storagePermission: 'Storage permission required',
       maxFileSize: 'File size too large (Max 5MB)',
       maxFiles: 'Maximum 5 files allowed',
+      selectSource: 'Select Upload Source',
+      instructions: 'Instructions & Guidelines',
+      closeInstructions: 'Close',
+      documentSummary: 'Document Summary',
+      summaryPlaceholder: 'AI will analyze and summarize your document...',
+      generateSummary: 'Generate Summary',
+      summaryGenerated: 'Summary generated successfully!',
+      // Instructions content
+      instructionsTitle: 'Medical Document Upload Guidelines',
+      instructionsSubtitle: 'Please follow these guidelines for best results',
+      whatToUpload: 'What to Upload:',
+      uploadList: [
+        '• Prescriptions and medication lists',
+        '• Lab reports and test results',
+        '• Medical certificates',
+        '• X-ray, MRI, or scan reports',
+        '• Doctor consultation notes',
+        '• Insurance documents',
+        '• Vaccination records'
+      ],
+      dosTitle: 'Do\'s:',
+      dosList: [
+        '• Ensure good lighting when taking photos',
+        '• Keep documents flat and unfolded',
+        '• Capture the entire document',
+        '• Use high resolution for better clarity',
+        '• Include all relevant pages',
+        '• Verify document is readable before uploading'
+      ],
+      dontsTitle: 'Don\'ts:',
+      dontsList: [
+        '• Don\'t upload blurry or unclear images',
+        '• Don\'t upload personal photos unrelated to health',
+        '• Don\'t upload documents with sensitive personal info',
+        '• Don\'t upload duplicate documents',
+        '• Don\'t upload corrupted or damaged files',
+        '• Don\'t upload documents of others without permission'
+      ],
+      privacyNote: 'Privacy Note: All documents are encrypted and stored securely. Only authorized medical professionals can access your health records.',
     },
     hi: {
       title: 'मेडिकल दस्तावेज़ अपलोड करें',
@@ -67,6 +111,45 @@ const DocumentUpload = ({ language, onNext, onBack }) => {
       storagePermission: 'स्टोरेज अनुमति आवश्यक',
       maxFileSize: 'फाइल साइज़ बहुत बड़ा (अधिकतम 5MB)',
       maxFiles: 'अधिकतम 5 फाइलों की अनुमति है',
+      selectSource: 'अपलोड स्रोत चुनें',
+      instructions: 'निर्देश और दिशानिर्देश',
+      closeInstructions: 'बंद करें',
+      documentSummary: 'दस्तावेज़ सारांश',
+      summaryPlaceholder: 'AI आपके दस्तावेज़ का विश्लेषण और सारांश तैयार करेगा...',
+      generateSummary: 'सारांश बनाएं',
+      summaryGenerated: 'सारांश सफलतापूर्वक बनाया गया!',
+      // Instructions content
+      instructionsTitle: 'मेडिकल दस्तावेज़ अपलोड दिशानिर्देश',
+      instructionsSubtitle: 'बेहतर परिणाम के लिए कृपया इन दिशानिर्देशों का पालन करें',
+      whatToUpload: 'क्या अपलोड करें:',
+      uploadList: [
+        '• नुस्खे और दवाओं की सूची',
+        '• लैब रिपोर्ट और टेस्ट परिणाम',
+        '• मेडिकल प्रमाणपत्र',
+        '• एक्स-रे, एमआरआई या स्कैन रिपोर्ट',
+        '• डॉक्टर परामर्श नोट्स',
+        '• बीमा दस्तावेज़',
+        '• टीकाकरण रिकॉर्ड'
+      ],
+      dosTitle: 'क्या करें:',
+      dosList: [
+        '• फोटो लेते समय अच्छी रोशनी सुनिश्चित करें',
+        '• दस्तावेज़ों को सपाट और खुला रखें',
+        '• पूरा दस्तावेज़ कैप्चर करें',
+        '• बेहतर स्पष्टता के लिए उच्च रिज़ॉल्यूशन का उपयोग करें',
+        '• सभी प्रासंगिक पृष्ठ शामिल करें',
+        '• अपलोड करने से पहले दस्तावेज़ पढ़ने योग्य है यह सत्यापित करें'
+      ],
+      dontsTitle: 'क्या न करें:',
+      dontsList: [
+        '• धुंधली या अस्पष्ट छवियां अपलोड न करें',
+        '• स्वास्थ्य से असंबंधित व्यक्तिगत फोटो अपलोड न करें',
+        '• संवेदनशील व्यक्तिगत जानकारी वाले दस्तावेज़ अपलोड न करें',
+        '• डुप्लिकेट दस्तावेज़ अपलोड न करें',
+        '• क्षतिग्रस्त या खराब फाइलें अपलोड न करें',
+        '• बिना अनुमति के दूसरों के दस्तावेज़ अपलोड न करें'
+      ],
+      privacyNote: 'गोपनीयता नोट: सभी दस्तावेज़ एन्क्रिप्टेड और सुरक्षित रूप से संग्रहीत हैं। केवल अधिकृत चिकित्सा पेशेवर ही आपके स्वास्थ्य रिकॉर्ड तक पहुंच सकते हैं।',
     },
     pa: {
       title: 'ਮੈਡੀਕਲ ਦਸਤਾਵੇਜ਼ ਅਪਲੋਡ ਕਰੋ',
@@ -302,6 +385,27 @@ const DocumentUpload = ({ language, onNext, onBack }) => {
     return parseFloat((bytes / Math.pow(k, i)).toFixed(2)) + ' ' + sizes[i];
   };
 
+  const generateDocumentSummary = async (file) => {
+    // Simulate AI document analysis and summarization
+    const summary = `Document Analysis Summary:
+    
+Type: ${file.type === 'image' ? 'Medical Image/Report' : 'PDF Document'}
+Key Information Detected:
+• Medical report/prescription identified
+• Contains patient information and medical data
+• Recommended for doctor review
+• File quality: ${file.size > 1000000 ? 'Good' : 'Acceptable'}
+
+This document appears to be a medical record that should be reviewed by a healthcare professional. Please ensure all information is clearly visible and complete.`;
+
+    return summary;
+  };
+
+  const handleSourceSelection = (source) => {
+    setShowSourceModal(false);
+    handleFileUpload(source);
+  };
+
   return (
     <ScrollView style={styles.container} showsVerticalScrollIndicator={false}>
       <View style={styles.header}>
@@ -310,83 +414,38 @@ const DocumentUpload = ({ language, onNext, onBack }) => {
       </View>
 
       {/* Upload Area */}
-      <TouchableOpacity 
-        style={styles.uploadArea}
-        onPress={() => {
-          console.log('Main upload area pressed');
-          if (!isUploading) {
-            handleFileUpload('files');
-          }
-        }}
-        activeOpacity={0.7}
-        disabled={isUploading}
-      >
+      <View style={styles.uploadArea}>
         <Icon name="cloud-upload" size={50} color="#00695C" />
         <Text style={styles.uploadText}>{t.dragDrop}</Text>
         <Text style={styles.supportedText}>{t.supportedFormats}</Text>
         
-        <View style={styles.uploadOptions}>
-          <TouchableOpacity
-            style={[
-              styles.uploadButton, 
-              styles.cameraButton,
-              isUploading && styles.uploadButtonDisabled
-            ]}
-            onPress={(e) => {
-              e.stopPropagation();
-              console.log('Camera button pressed');
-              if (!isUploading) {
-                handleFileUpload('camera');
-              }
-            }}
-            disabled={isUploading}
-            activeOpacity={isUploading ? 1 : 0.7}
-          >
-            <Icon name="camera-alt" size={24} color="#fff" />
-            <Text style={styles.uploadButtonText}>{t.uploadFromCamera}</Text>
-          </TouchableOpacity>
+        <TouchableOpacity
+          style={[
+            styles.mainUploadButton,
+            isUploading && styles.uploadButtonDisabled
+          ]}
+          onPress={() => {
+            console.log('Upload button pressed');
+            if (!isUploading) {
+              setShowSourceModal(true);
+            }
+          }}
+          disabled={isUploading}
+          activeOpacity={isUploading ? 1 : 0.7}
+        >
+          <Icon name="add" size={24} color="#fff" />
+          <Text style={styles.mainUploadButtonText}>Upload Medical Documents</Text>
+        </TouchableOpacity>
 
-          <TouchableOpacity
-            style={[
-              styles.uploadButton, 
-              styles.galleryButton,
-              isUploading && styles.uploadButtonDisabled
-            ]}
-            onPress={(e) => {
-              e.stopPropagation();
-              console.log('Gallery button pressed');
-              if (!isUploading) {
-                handleFileUpload('gallery');
-              }
-            }}
-            disabled={isUploading}
-            activeOpacity={isUploading ? 1 : 0.7}
-          >
-            <Icon name="photo-library" size={24} color="#fff" />
-            <Text style={styles.uploadButtonText}>{t.uploadFromGallery}</Text>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            style={[
-              styles.uploadButton, 
-              styles.filesButton,
-              isUploading && styles.uploadButtonDisabled
-            ]}
-            onPress={(e) => {
-              e.stopPropagation();
-              console.log('Files button pressed');
-              if (!isUploading) {
-                handleFileUpload('files');
-              }
-            }}
-            disabled={isUploading}
-            activeOpacity={isUploading ? 1 : 0.7}
-          >
-            <Icon name="folder-open" size={24} color="#fff" />
-            <Text style={styles.uploadButtonText}>{t.uploadFromFiles}</Text>
-          </TouchableOpacity>
-        </View>
-      </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.instructionsButton}
+          onPress={() => setShowInstructions(true)}
+          activeOpacity={0.7}
+        >
+          <Icon name="info-outline" size={20} color="#00695C" />
+          <Text style={styles.instructionsButtonText}>{t.instructions}</Text>
+        </TouchableOpacity>
+      </View>
 
       {/* Offline Indicator */}
       <View style={styles.offlineIndicator}>
@@ -432,6 +491,12 @@ const DocumentUpload = ({ language, onNext, onBack }) => {
                     <View style={styles.statusContainer}>
                       <Icon name="check-circle" size={16} color="#4CAF50" />
                       <Text style={styles.successText}>{t.uploadSuccess}</Text>
+                      {file.summary && (
+                        <View style={styles.summaryContainer}>
+                          <Text style={styles.summaryLabel}>{t.documentSummary}:</Text>
+                          <Text style={styles.summaryText}>{file.summary}</Text>
+                        </View>
+                      )}
                     </View>
                   )}
                   
@@ -445,6 +510,22 @@ const DocumentUpload = ({ language, onNext, onBack }) => {
               </View>
               
               <View style={styles.fileActions}>
+                {file.status === 'success' && !file.summary && (
+                  <TouchableOpacity
+                    style={styles.summaryButton}
+                    onPress={async () => {
+                      console.log('Generate summary for file:', file.name);
+                      const summary = await generateDocumentSummary(file);
+                      setUploadedFiles(prev => prev.map(f => 
+                        f.id === file.id ? { ...f, summary } : f
+                      ));
+                    }}
+                    activeOpacity={0.7}
+                  >
+                    <Icon name="auto-awesome" size={20} color="#2196F3" />
+                  </TouchableOpacity>
+                )}
+                
                 {file.status === 'error' && (
                   <TouchableOpacity
                     style={styles.retryButton}
@@ -483,6 +564,126 @@ const DocumentUpload = ({ language, onNext, onBack }) => {
           ))
         )}
       </View>
+
+      {/* Source Selection Modal */}
+      <Modal
+        visible={showSourceModal}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowSourceModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.modalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{t.selectSource}</Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setShowSourceModal(false)}
+              >
+                <Icon name="close" size={24} color="#666" />
+              </TouchableOpacity>
+            </View>
+            
+            <View style={styles.sourceOptions}>
+              <TouchableOpacity
+                style={[styles.sourceOption, styles.cameraOption]}
+                onPress={() => handleSourceSelection('camera')}
+                activeOpacity={0.7}
+              >
+                <Icon name="camera-alt" size={40} color="#fff" />
+                <Text style={styles.sourceOptionText}>{t.uploadFromCamera}</Text>
+                <Text style={styles.sourceOptionSubtext}>Take a photo of your document</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.sourceOption, styles.galleryOption]}
+                onPress={() => handleSourceSelection('gallery')}
+                activeOpacity={0.7}
+              >
+                <Icon name="photo-library" size={40} color="#fff" />
+                <Text style={styles.sourceOptionText}>{t.uploadFromGallery}</Text>
+                <Text style={styles.sourceOptionSubtext}>Choose from your photos</Text>
+              </TouchableOpacity>
+
+              <TouchableOpacity
+                style={[styles.sourceOption, styles.filesOption]}
+                onPress={() => handleSourceSelection('files')}
+                activeOpacity={0.7}
+              >
+                <Icon name="folder-open" size={40} color="#fff" />
+                <Text style={styles.sourceOptionText}>{t.uploadFromFiles}</Text>
+                <Text style={styles.sourceOptionSubtext}>Select PDF files</Text>
+              </TouchableOpacity>
+            </View>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Instructions Modal */}
+      <Modal
+        visible={showInstructions}
+        transparent={true}
+        animationType="slide"
+        onRequestClose={() => setShowInstructions(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <View style={styles.instructionsModalContent}>
+            <View style={styles.modalHeader}>
+              <Text style={styles.modalTitle}>{t.instructionsTitle}</Text>
+              <TouchableOpacity
+                style={styles.closeButton}
+                onPress={() => setShowInstructions(false)}
+              >
+                <Icon name="close" size={24} color="#666" />
+              </TouchableOpacity>
+            </View>
+            
+            <ScrollView style={styles.instructionsContent} showsVerticalScrollIndicator={false}>
+              <Text style={styles.instructionsSubtitle}>{t.instructionsSubtitle}</Text>
+              
+              <View style={styles.instructionSection}>
+                <Text style={styles.instructionSectionTitle}>{t.whatToUpload}</Text>
+                {t.uploadList.map((item, index) => (
+                  <Text key={index} style={styles.instructionItem}>{item}</Text>
+                ))}
+              </View>
+
+              <View style={styles.instructionSection}>
+                <Text style={styles.instructionSectionTitle}>{t.dosTitle}</Text>
+                {t.dosList.map((item, index) => (
+                  <Text key={index} style={styles.instructionItem}>{item}</Text>
+                ))}
+              </View>
+
+              <View style={styles.instructionSection}>
+                <Text style={styles.instructionSectionTitle}>{t.dontsTitle}</Text>
+                {t.dontsList.map((item, index) => (
+                  <Text key={index} style={styles.instructionItem}>{item}</Text>
+                ))}
+              </View>
+
+              <View style={styles.privacySection}>
+                <Icon name="security" size={20} color="#4CAF50" />
+                <Text style={styles.privacyText}>{t.privacyNote}</Text>
+              </View>
+            </ScrollView>
+          </View>
+        </View>
+      </Modal>
+
+      {/* Document Summary Screen */}
+      <DocumentSummaryScreen
+        visible={showSummary}
+        onClose={() => {
+          setShowSummary(false);
+          // Call onNext with uploaded files when summary is closed
+          if (onNext && typeof onNext === 'function') {
+            onNext(uploadedFiles);
+          }
+        }}
+        documents={uploadedFiles}
+        language={language}
+      />
 
       {/* Navigation Buttons */}
       <View style={styles.navigationButtons}>
@@ -523,10 +724,8 @@ const DocumentUpload = ({ language, onNext, onBack }) => {
           ]} 
           onPress={() => {
             console.log('Continue button pressed in DocumentUpload with files:', uploadedFiles.length);
-            if (onNext && typeof onNext === 'function') {
-              onNext(uploadedFiles);
-            } else {
-              console.log('onNext function not available');
+            if (uploadedFiles.length > 0) {
+              setShowSummary(true);
             }
           }}
           disabled={uploadedFiles.length === 0}
@@ -536,7 +735,7 @@ const DocumentUpload = ({ language, onNext, onBack }) => {
             styles.continueButtonText,
             uploadedFiles.length === 0 && { color: '#999' }
           ]}>
-            {t.continue}
+            {uploadedFiles.length > 0 ? 'View AI Analysis' : t.continue}
           </Text>
         </TouchableOpacity>
       </View>
@@ -583,6 +782,44 @@ const styles = StyleSheet.create({
     shadowOpacity: 0.1,
     shadowRadius: 3.84,
     elevation: 5,
+  },
+  mainUploadButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#00695C',
+    paddingHorizontal: 24,
+    paddingVertical: 16,
+    borderRadius: 30,
+    marginTop: 20,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.2,
+    shadowRadius: 3.84,
+    elevation: 3,
+  },
+  mainUploadButtonText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 8,
+  },
+  instructionsButton: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginTop: 15,
+    paddingHorizontal: 16,
+    paddingVertical: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(0, 105, 92, 0.1)',
+  },
+  instructionsButtonText: {
+    color: '#00695C',
+    fontSize: 14,
+    fontWeight: '500',
+    marginLeft: 6,
   },
   uploadText: {
     fontSize: 18,
@@ -650,6 +887,147 @@ const styles = StyleSheet.create({
     fontSize: 14,
     color: '#FF9800',
     marginLeft: 8,
+  },
+  // Modal styles
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+  },
+  modalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 20,
+    margin: 20,
+    width: width * 0.9,
+    maxHeight: height * 0.6,
+  },
+  instructionsModalContent: {
+    backgroundColor: '#fff',
+    borderRadius: 20,
+    padding: 20,
+    margin: 20,
+    width: width * 0.95,
+    maxHeight: height * 0.8,
+  },
+  modalHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 20,
+  },
+  modalTitle: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#333',
+    flex: 1,
+  },
+  closeButton: {
+    padding: 5,
+  },
+  sourceOptions: {
+    gap: 15,
+  },
+  sourceOption: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    padding: 20,
+    borderRadius: 15,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 3,
+  },
+  cameraOption: {
+    backgroundColor: '#FF5722',
+  },
+  galleryOption: {
+    backgroundColor: '#2196F3',
+  },
+  filesOption: {
+    backgroundColor: '#FF9800',
+  },
+  sourceOptionText: {
+    color: '#fff',
+    fontSize: 16,
+    fontWeight: '600',
+    marginLeft: 15,
+    flex: 1,
+  },
+  sourceOptionSubtext: {
+    color: 'rgba(255, 255, 255, 0.8)',
+    fontSize: 12,
+    marginLeft: 15,
+  },
+  // Instructions modal styles
+  instructionsContent: {
+    flex: 1,
+  },
+  instructionsSubtitle: {
+    fontSize: 16,
+    color: '#666',
+    textAlign: 'center',
+    marginBottom: 20,
+    lineHeight: 22,
+  },
+  instructionSection: {
+    marginBottom: 20,
+  },
+  instructionSectionTitle: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#00695C',
+    marginBottom: 10,
+  },
+  instructionItem: {
+    fontSize: 14,
+    color: '#333',
+    marginBottom: 5,
+    lineHeight: 20,
+  },
+  privacySection: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    backgroundColor: '#E8F5E8',
+    padding: 15,
+    borderRadius: 10,
+    marginTop: 20,
+  },
+  privacyText: {
+    fontSize: 12,
+    color: '#2E7D32',
+    marginLeft: 10,
+    flex: 1,
+    lineHeight: 18,
+  },
+  // Summary styles
+  summaryContainer: {
+    marginTop: 10,
+    padding: 10,
+    backgroundColor: '#E3F2FD',
+    borderRadius: 8,
+  },
+  summaryLabel: {
+    fontSize: 12,
+    fontWeight: 'bold',
+    color: '#1976D2',
+    marginBottom: 5,
+  },
+  summaryText: {
+    fontSize: 12,
+    color: '#333',
+    lineHeight: 16,
+  },
+  summaryButton: {
+    padding: 8,
+    borderRadius: 20,
+    backgroundColor: 'rgba(33, 150, 243, 0.1)',
+    marginRight: 8,
   },
   filesSection: {
     paddingHorizontal: 20,

@@ -142,21 +142,10 @@ const ASHATabNavigator = () => {
 
 // Main App Navigator
 const AppNavigator = () => {
-  const { isAuthenticated, user } = useSelector((state) => state.auth);
-
-  if (!isAuthenticated) {
-    return <AuthNavigator />;
-  }
-
+  // Always show the PatientTabNavigator as the initial screen (bypass auth)
   return (
     <Stack.Navigator screenOptions={{ headerShown: false }}>
-      {user?.role === 'patient' && (
-        <Stack.Screen name="PatientMain" component={PatientTabNavigator} />
-      )}
-      {user?.role === 'asha' && (
-        <Stack.Screen name="ASHAMain" component={ASHATabNavigator} />
-      )}
-      
+      <Stack.Screen name="PatientMain" component={PatientTabNavigator} />
       {/* Common Screens */}
       <Stack.Screen 
         name="BookConsultation" 
