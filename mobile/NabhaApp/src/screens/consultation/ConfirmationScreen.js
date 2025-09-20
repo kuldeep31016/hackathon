@@ -253,14 +253,43 @@ const ConfirmationScreen = ({
 
       console.log('Sending booking data to backend:', bookingData);
 
-      // Try network IP for mobile device
-      const response = await fetch('http://192.168.1.5:3001/api/consultations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookingData)
-      });
+      // Try multiple URLs for mobile device connectivity (first function)
+      const apiUrls = [
+        'http://192.168.1.35:3001/api/consultations',  // Current network IP
+        'http://192.168.1.5:3001/api/consultations',   // Previous network IP  
+        'http://localhost:3001/api/consultations'       // Localhost fallback
+      ];
+
+      let response;
+      let lastError;
+
+      for (const url of apiUrls) {
+        try {
+          console.log('🔄 Trying URL (first function):', url);
+          response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingData)
+          });
+          
+          if (response.ok) {
+            console.log('✅ Connected successfully to:', url);
+            break;
+          } else {
+            console.log('❌ Failed with status:', response.status, 'for URL:', url);
+          }
+        } catch (error) {
+          console.log('❌ Network error for URL:', url, error.message);
+          lastError = error;
+          continue;
+        }
+      }
+
+      if (!response || !response.ok) {
+        throw lastError || new Error('All API endpoints failed');
+      }
 
       if (response.ok) {
         const result = await response.json();
@@ -328,14 +357,43 @@ const ConfirmationScreen = ({
 
       console.log('Sending booking data to backend:', bookingData);
 
-      // Try network IP for mobile device
-      const response = await fetch('http://192.168.1.5:3001/api/consultations', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(bookingData)
-      });
+      // Try multiple URLs for mobile device connectivity
+      const apiUrls = [
+        'http://192.168.1.35:3001/api/consultations',  // Current network IP
+        'http://192.168.1.5:3001/api/consultations',   // Previous network IP  
+        'http://localhost:3001/api/consultations'       // Localhost fallback
+      ];
+
+      let response;
+      let lastError;
+
+      for (const url of apiUrls) {
+        try {
+          console.log('🔄 Trying URL:', url);
+          response = await fetch(url, {
+            method: 'POST',
+            headers: {
+              'Content-Type': 'application/json',
+            },
+            body: JSON.stringify(bookingData)
+          });
+          
+          if (response.ok) {
+            console.log('✅ Connected successfully to:', url);
+            break;
+          } else {
+            console.log('❌ Failed with status:', response.status, 'for URL:', url);
+          }
+        } catch (error) {
+          console.log('❌ Network error for URL:', url, error.message);
+          lastError = error;
+          continue;
+        }
+      }
+
+      if (!response || !response.ok) {
+        throw lastError || new Error('All API endpoints failed');
+      }
 
       if (response.ok) {
         const result = await response.json();
@@ -343,9 +401,25 @@ const ConfirmationScreen = ({
         console.log('✅ Booking ID confirmed:', bookingIdToUse);
       } else {
         console.error('❌ Failed to save booking:', response.status);
+        const errorText = await response.text();
+        console.error('❌ Response error:', errorText);
       }
     } catch (error) {
       console.error('❌ Error saving booking to backend:', error);
+      console.error('❌ Error details:', error.message);
+      console.error('❌ Error stack:', error.stack);
+      console.error('❌ Doctor object was:', doctor);
+      console.error('❌ PersonalDetails object was:', personalDetails);
+      console.error('❌ ConsultationType was:', consultationType);
+      console.error('❌ PaymentDetails was:', paymentDetails);
+      console.error('❌ Symptoms was:', symptoms);
+      
+      // Show user-friendly error message
+      Alert.alert(
+        'Booking Error',
+        `There was an issue saving your booking: ${error.message}. Please check your internet connection and try again.`,
+        [{ text: 'OK' }]
+      );
     }
   };
 
