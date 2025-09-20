@@ -32,6 +32,8 @@ const ConfirmationScreen = ({
     return `${prefix}${timestamp}${random}`;
   };
 
+  
+
   const [bookingId, setBookingId] = useState(() => {
     const generatedId = generateBookingId();
     console.log('🆔 Initial booking ID generated:', generatedId);
