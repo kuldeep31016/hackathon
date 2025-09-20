@@ -332,7 +332,7 @@
             // Check backend connectivity
             async function checkBackendConnection() {
                 try {
-                    const response = await fetch('http://localhost:3000/api/auth/login', {
+                    const response = await fetch('http://localhost:3001/api/auth/login', {
                         method: 'HEAD'
                     });
                     systemStatus.innerHTML = '<i class="fas fa-circle"></i> System Online';
@@ -367,7 +367,7 @@
                     console.log('Attempting doctor login with:', { email, password: '***' });
                     
                     // Make login request to backend
-                    const response = await fetch('http://localhost:3000/api/auth/login', {
+                    const response = await fetch('http://localhost:3001/api/auth/login', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',

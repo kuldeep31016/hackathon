@@ -4,6 +4,7 @@ require('dotenv').config();
 
 // Import models
 const User = require('../models/User');
+const Doctor = require('../models/Doctor');
 const Medicine = require('../models/Medicine');
 const Pharmacy = require('../models/Pharmacy');
 const HealthRecord = require('../models/HealthRecord');
@@ -23,6 +24,7 @@ const seedData = async () => {
 
     // Clear existing data
     await User.deleteMany({});
+    await Doctor.deleteMany({});
     await Medicine.deleteMany({});
     await Pharmacy.deleteMany({});
     await HealthRecord.deleteMany({});
@@ -102,7 +104,6 @@ const seedData = async () => {
         phone: '9876543211',
         name: 'Dr. Rajesh Kumar',
         email: 'dr.rajesh@nabha.com',
-        role: 'doctor',
         password: 'doctor123',
         specialization: 'General Medicine',
         licenseNumber: 'MED123456',
@@ -121,7 +122,6 @@ const seedData = async () => {
         phone: '9876543212',
         name: 'Dr. Priya Sharma',
         email: 'dr.priya@nabha.com',
-        role: 'doctor',
         password: 'doctor123',
         specialization: 'Pediatrics',
         licenseNumber: 'MED123457',
@@ -140,7 +140,6 @@ const seedData = async () => {
         phone: '9876543213',
         name: 'Dr. Amit Singh',
         email: 'dr.amit@nabha.com',
-        role: 'doctor',
         password: 'doctor123',
         specialization: 'Cardiology',
         licenseNumber: 'MED123458',
@@ -157,7 +156,12 @@ const seedData = async () => {
       }
     ];
 
-    const createdDoctors = await User.insertMany(doctors);
+    const createdDoctors = [];
+    for (const doctorData of doctors) {
+      const doctor = new Doctor(doctorData);
+      await doctor.save(); // This will trigger the pre-save hook to hash the password
+      createdDoctors.push(doctor);
+    }
     console.log('Created doctors');
 
     // Create ASHA workers
