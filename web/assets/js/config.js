@@ -2,7 +2,7 @@
 const config = {
     // API Configuration - Updated to connect to your existing backend
     api: {
-        baseUrl: 'http://localhost:3000/api', // Your unified backend port
+        baseUrl: 'http://localhost:3001/api', // Your unified backend port
         timeout: 15000,
         retryAttempts: 3,
         retryDelay: 1000
@@ -10,7 +10,7 @@ const config = {
     
     // WebSocket Configuration - Updated for your backend
     websocket: {
-        url: 'http://localhost:3000', // Match your backend Socket.IO server
+        url: 'http://localhost:3001', // Match your backend Socket.IO server
         enabled: true,
         reconnectAttempts: 5,
         reconnectInterval: 3000,
@@ -307,6 +307,9 @@ const ConfigUtils = {
 // Make configuration available globally
 window.CONFIG = config;
 window.ConfigUtils = ConfigUtils;
+
+// Legacy API_BASE_URL variable for compatibility with admin registration page
+window.API_BASE_URL = config.api.baseUrl;
 
 // Log configuration load
 ConfigUtils.log('info', 'Nabha Telemedicine configuration loaded', {

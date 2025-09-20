@@ -11,7 +11,7 @@ const app = express();
 const server = http.createServer(app);
 
 // Environment variables
-const PORT = process.env.PORT || 3000;
+const PORT = process.env.PORT || 3001;
 const HOST = process.env.HOST || '0.0.0.0';
 const NODE_ENV = process.env.NODE_ENV || 'development';
 const MONGODB_URI = process.env.MONGODB_URI || 'mongodb://localhost:27017/nabha_telemedicine_clean';
