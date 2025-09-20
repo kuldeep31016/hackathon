@@ -9,6 +9,7 @@
     <link rel="stylesheet" href="assets/css/components.css">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         /* Modern Healthcare Admin Dashboard - Professional Design System */
         :root {
@@ -1954,15 +1955,15 @@
                 <!-- Dashboard Section -->
                 <div class="nav-section">
                     <div class="nav-section-title">Dashboard</div>
-                    <a href="#" class="nav-item active">
+                    <a href="" class="nav-item active">
                         <i class="fas fa-tachometer-alt"></i>
                         <span>Overview</span>
                     </a>
-                    <a href="#" class="nav-item">
+                    <a href="#analyticsSection" class="nav-item">
                         <i class="fas fa-chart-line"></i>
                         <span>Analytics</span>
                     </a>
-                    <a href="#" class="nav-item">
+                    <a href="#realtimeAlertsSection" class="nav-item">
                         <i class="fas fa-bell"></i>
                         <span>Real-time Alerts</span>
                         <span class="nav-badge">3</span>
@@ -1972,7 +1973,7 @@
                 <!-- User Management Section -->
                 <div class="nav-section">
                     <div class="nav-section-title">User Management</div>
-                    <a href="#" class="nav-item">
+                    <a href="#doctorsSection" class="nav-item">
                         <i class="fas fa-user-md"></i>
                         <span>Doctors</span>
                         <span class="nav-badge">2</span>
@@ -1985,16 +1986,16 @@
                         <i class="fas fa-user-nurse"></i>
                         <span>ASHA Workers</span>
                     </a>
-                    <a href="#" class="nav-item">
+                    <a href="#recentActivitySection" class="nav-item">
                         <i class="fas fa-user-shield"></i>
-                        <span>Staff & Admins</span>
+                        <span>Recent Activity</span>
                     </a>
                 </div>
 
                 <!-- Healthcare Operations -->
                 <div class="nav-section">
                     <div class="nav-section-title">Healthcare</div>
-                    <a href="#" class="nav-item">
+                    <a href="#consultationBookingsSection" class="nav-item">
                         <i class="fas fa-calendar-alt"></i>
                         <span>Appointments</span>
                     </a>
@@ -2244,7 +2245,7 @@
             </section>
 
             <!-- Recent Activity -->
-            <section class="activity-section">
+            <section class="activity-section" id="recentActivitySection">
                 <div class="section-header">
                     <h2 class="section-title">
                         <i class="fas fa-clock"></i>
@@ -2309,8 +2310,384 @@
                 </div>
             </section>
 
-            <!-- Consultation Bookings Section -->
-            <section class="consultation-bookings-section">
+            <!-- ASHA Workers Dashboard Section -->
+            <section class="asha-workers-section" id="ashaWorkersSection" style="display: none;">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-user-nurse"></i>
+                        ASHA Workers Dashboard
+                    </h2>
+                    <div class="section-actions">
+                        <button class="btn btn-primary">
+                            <i class="fas fa-plus"></i>
+                            Add ASHA Worker
+                        </button>
+                        <button class="btn btn-outline">
+                            <i class="fas fa-download"></i>
+                            Export Report
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ASHA Overview Cards -->
+                <div class="asha-overview-grid">
+                    <div class="overview-card asha-stats">
+                        <div class="card-icon">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="totalASHAWorkers">156</div>
+                            <div class="card-label">Total ASHA Workers</div>
+                        </div>
+                        <div class="card-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+12 this month</span>
+                        </div>
+                    </div>
+
+                    <div class="overview-card asha-stats">
+                        <div class="card-icon">
+                            <i class="fas fa-user-check"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="activeASHA">142</div>
+                            <div class="card-label">Active Workers</div>
+                        </div>
+                        <div class="card-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>91% active rate</span>
+                        </div>
+                    </div>
+
+                    <div class="overview-card asha-stats">
+                        <div class="card-icon">
+                            <i class="fas fa-clipboard-list"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="ashaReports">1,284</div>
+                            <div class="card-label">Monthly Reports</div>
+                        </div>
+                        <div class="card-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>+18% from last month</span>
+                        </div>
+                    </div>
+
+                    <div class="overview-card asha-stats">
+                        <div class="card-icon">
+                            <i class="fas fa-map-marked-alt"></i>
+                        </div>
+                        <div class="card-content">
+                            <div class="card-value" id="coverageAreas">45</div>
+                            <div class="card-label">Coverage Areas</div>
+                        </div>
+                        <div class="card-trend positive">
+                            <i class="fas fa-arrow-up"></i>
+                            <span>98% coverage</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ASHA Management Filters -->
+                <div class="asha-filters">
+                    <div class="filter-group">
+                        <label for="ashaDistrictFilter">District:</label>
+                        <select id="ashaDistrictFilter" class="filter-select">
+                            <option value="all">All Districts</option>
+                            <option value="patiala">Patiala</option>
+                            <option value="fatehgarh">Fatehgarh Sahib</option>
+                            <option value="sangrur">Sangrur</option>
+                            <option value="barnala">Barnala</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="ashaStatusFilter">Status:</label>
+                        <select id="ashaStatusFilter" class="filter-select">
+                            <option value="all">All Status</option>
+                            <option value="active">Active</option>
+                            <option value="inactive">Inactive</option>
+                            <option value="training">In Training</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <label for="ashaPerformanceFilter">Performance:</label>
+                        <select id="ashaPerformanceFilter" class="filter-select">
+                            <option value="all">All Performers</option>
+                            <option value="excellent">Excellent (90%+)</option>
+                            <option value="good">Good (70-89%)</option>
+                            <option value="average">Average (50-69%)</option>
+                            <option value="poor">Needs Improvement (<50%)</option>
+                        </select>
+                    </div>
+                    <div class="filter-group">
+                        <input type="text" id="ashaSearchInput" placeholder="Search ASHA workers..." class="search-input">
+                        <button class="btn btn-primary search-btn">
+                            <i class="fas fa-search"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ASHA Workers Grid -->
+                <div class="asha-workers-container">
+                    <div class="asha-workers-grid" id="ashaWorkersGrid">
+                        <!-- ASHA Worker Card 1 -->
+                        <div class="asha-worker-card">
+                            <div class="worker-header">
+                                <div class="worker-avatar">
+                                    <img src="/assets/images/asha1.jpg" alt="Priya Sharma" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex'">
+                                    <div class="avatar-placeholder" style="display: none;">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                </div>
+                                <div class="worker-info">
+                                    <h3 class="worker-name">Priya Sharma</h3>
+                                    <p class="worker-id">ASHA-PTL-001</p>
+                                    <span class="worker-status active">Active</span>
+                                </div>
+                                <div class="worker-actions">
+                                    <button class="action-btn" title="View Profile">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn" title="Send Message">
+                                        <i class="fas fa-message"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="worker-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Patiala Rural Block</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-phone"></i>
+                                    <span>+91 98765 43210</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>245 Households</span>
+                                </div>
+                            </div>
+                            <div class="worker-performance">
+                                <div class="performance-metric">
+                                    <span class="metric-label">Reports Submitted</span>
+                                    <span class="metric-value">28/30</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 93%"></div>
+                                    </div>
+                                </div>
+                                <div class="performance-metric">
+                                    <span class="metric-label">Home Visits</span>
+                                    <span class="metric-value">156/160</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 98%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ASHA Worker Card 2 -->
+                        <div class="asha-worker-card">
+                            <div class="worker-header">
+                                <div class="worker-avatar">
+                                    <div class="avatar-placeholder">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                </div>
+                                <div class="worker-info">
+                                    <h3 class="worker-name">Sunita Kaur</h3>
+                                    <p class="worker-id">ASHA-PTL-002</p>
+                                    <span class="worker-status active">Active</span>
+                                </div>
+                                <div class="worker-actions">
+                                    <button class="action-btn" title="View Profile">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn" title="Send Message">
+                                        <i class="fas fa-message"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="worker-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Nabha Block</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-phone"></i>
+                                    <span>+91 87654 32109</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>198 Households</span>
+                                </div>
+                            </div>
+                            <div class="worker-performance">
+                                <div class="performance-metric">
+                                    <span class="metric-label">Reports Submitted</span>
+                                    <span class="metric-value">30/30</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 100%"></div>
+                                    </div>
+                                </div>
+                                <div class="performance-metric">
+                                    <span class="metric-label">Home Visits</span>
+                                    <span class="metric-value">195/200</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 98%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ASHA Worker Card 3 -->
+                        <div class="asha-worker-card">
+                            <div class="worker-header">
+                                <div class="worker-avatar">
+                                    <div class="avatar-placeholder">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                </div>
+                                <div class="worker-info">
+                                    <h3 class="worker-name">Manjit Singh</h3>
+                                    <p class="worker-id">ASHA-PTL-003</p>
+                                    <span class="worker-status training">Training</span>
+                                </div>
+                                <div class="worker-actions">
+                                    <button class="action-btn" title="View Profile">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn" title="Send Message">
+                                        <i class="fas fa-message"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="worker-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Rajpura Block</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-phone"></i>
+                                    <span>+91 76543 21098</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>180 Households</span>
+                                </div>
+                            </div>
+                            <div class="worker-performance">
+                                <div class="performance-metric">
+                                    <span class="metric-label">Training Progress</span>
+                                    <span class="metric-value">7/10</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 70%"></div>
+                                    </div>
+                                </div>
+                                <div class="performance-metric">
+                                    <span class="metric-label">Field Practice</span>
+                                    <span class="metric-value">45/60</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 75%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- ASHA Worker Card 4 -->
+                        <div class="asha-worker-card">
+                            <div class="worker-header">
+                                <div class="worker-avatar">
+                                    <div class="avatar-placeholder">
+                                        <i class="fas fa-user"></i>
+                                    </div>
+                                </div>
+                                <div class="worker-info">
+                                    <h3 class="worker-name">Ranjit Kaur</h3>
+                                    <p class="worker-id">ASHA-PTL-004</p>
+                                    <span class="worker-status active">Active</span>
+                                </div>
+                                <div class="worker-actions">
+                                    <button class="action-btn" title="View Profile">
+                                        <i class="fas fa-eye"></i>
+                                    </button>
+                                    <button class="action-btn" title="Send Message">
+                                        <i class="fas fa-message"></i>
+                                    </button>
+                                </div>
+                            </div>
+                            <div class="worker-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-map-marker-alt"></i>
+                                    <span>Samana Block</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-phone"></i>
+                                    <span>+91 65432 10987</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-users"></i>
+                                    <span>220 Households</span>
+                                </div>
+                            </div>
+                            <div class="worker-performance">
+                                <div class="performance-metric">
+                                    <span class="metric-label">Reports Submitted</span>
+                                    <span class="metric-value">25/30</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 83%"></div>
+                                    </div>
+                                </div>
+                                <div class="performance-metric">
+                                    <span class="metric-label">Home Visits</span>
+                                    <span class="metric-value">210/220</span>
+                                    <div class="metric-bar">
+                                        <div class="metric-fill" style="width: 95%"></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Load More Button -->
+                    <div class="asha-load-more">
+                        <button class="btn btn-outline" id="loadMoreASHA">
+                            <i class="fas fa-plus"></i>
+                            Load More ASHA Workers
+                        </button>
+                    </div>
+                </div>
+
+                <!-- ASHA Performance Analytics -->
+                <div class="asha-analytics">
+                    <div class="analytics-header">
+                        <h3>ASHA Performance Analytics</h3>
+                        <div class="analytics-filters">
+                            <select class="filter-select-sm">
+                                <option value="month">This Month</option>
+                                <option value="quarter">This Quarter</option>
+                                <option value="year">This Year</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="analytics-charts-grid">
+                        <div class="chart-container">
+                            <h4>Monthly Report Submission Rates</h4>
+                            <canvas id="ashaReportChart" height="200"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h4>Home Visit Coverage</h4>
+                            <canvas id="ashaVisitChart" height="200"></canvas>
+                        </div>
+                        <div class="chart-container">
+                            <h4>District-wise Performance</h4>
+                            <canvas id="ashaDistrictChart" height="200"></canvas>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Consultation Bookings Section Hard Coded Sample -->
+            <section class="consultation-bookings-section" id="consultationBookingsSection">
                 <div class="section-header">
                     <h2 class="section-title">
                         <i class="fas fa-calendar-check"></i>
@@ -2336,7 +2713,7 @@
                         <p>No consultation bookings found</p>
                     </div>
                     <div class="bookings-grid" id="bookingsGrid">
-                        <!-- Booking cards will be inserted here dynamically -->
+                        <!-- booking card will be appear here  -->
                     </div>
                 </div>
             </section>
@@ -2519,8 +2896,8 @@
                 </div>
             </section>
 
-            <!-- Appointments Section -->
-            <section class="appointments-section" id="appointmentsSection" style="display: none;">
+            <!-- Appointments Section sample hard coded -->
+            <!-- <section class="appointments-section" id="appointmentsSection" style="display: none;">
                 <div class="section-header">
                     <h2 class="section-title">
                         <i class="fas fa-calendar-alt"></i>
@@ -2545,10 +2922,10 @@
                             <i class="fas fa-sync-alt"></i> Refresh
                         </button>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Appointments Stats Cards -->
-                <div class="appointments-stats">
+                <!-- <div class="appointments-stats">
                     <div class="stat-card">
                         <div class="stat-icon">
                             <i class="fas fa-calendar-check"></i>
@@ -2585,18 +2962,18 @@
                             <div class="stat-label">Available Doctors</div>
                         </div>
                     </div>
-                </div>
+                </div> -->
 
                 <!-- Appointments Grid -->
-                <div class="appointments-grid" id="appointmentsGrid">
+                <!-- <div class="appointments-grid" id="appointmentsGrid"> -->
                     <!-- Loading State -->
-                    <div class="loading-state" id="appointmentsLoading">
+                    <!-- <div class="loading-state" id="appointmentsLoading">
                         <div class="spinner"></div>
                         <div>Loading consultation bookings...</div>
-                    </div>
+                    </div> -->
 
                     <!-- Sample Appointment Cards -->
-                    <div class="appointment-card pending">
+                    <!-- <div class="appointment-card pending">
                         <div class="appointment-header">
                             <div class="appointment-id">#APT-2024-001</div>
                             <div class="appointment-status status-pending">
@@ -2755,7 +3132,7 @@
                         </div>
                     </div>
                 </div>
-            </section>
+            </section> -->
 
             <!-- Analytics Section -->
             <section class="analytics-section" id="analyticsSection" style="display: none;">
@@ -2904,7 +3281,7 @@
                                 </div>
                             </div>
                         </div>
-                        <canvas id="revenueAnalyticsChart" width="800" height="300"></canvas>
+                        <canvas id="revenueAnalyticsChart" width="800" height="200"></canvas>
                     </div>
                 </div>
 
@@ -4449,6 +4826,11 @@
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
         }
 
+        .chart-container canvas {
+            height: 200px !important;
+            max-height: 200px;
+        }
+
         .chart-container.full-width {
             grid-column: 1 / -1;
         }
@@ -5306,6 +5688,291 @@
         .nav-item.active i {
             color: var(--primary-medical-blue);
         }
+
+        /* ASHA Workers Dashboard Styles */
+        .asha-workers-section {
+            padding: var(--spacing-xl);
+        }
+
+        .asha-overview-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-xl);
+        }
+
+        .asha-stats {
+            background: linear-gradient(135deg, rgba(16, 185, 129, 0.1), rgba(5, 150, 105, 0.1));
+            border-left: 4px solid var(--success-medical-green);
+        }
+
+        .asha-filters {
+            display: flex;
+            gap: var(--spacing-lg);
+            align-items: end;
+            margin-bottom: var(--spacing-xl);
+            padding: var(--spacing-lg);
+            background: rgba(255, 255, 255, 0.8);
+            border-radius: 12px;
+            flex-wrap: wrap;
+        }
+
+        .filter-group {
+            display: flex;
+            flex-direction: column;
+            gap: var(--spacing-xs);
+        }
+
+        .filter-group label {
+            font-size: var(--font-small);
+            font-weight: 600;
+            color: var(--text-secondary);
+        }
+
+        .search-input {
+            padding: var(--spacing-sm) var(--spacing-md);
+            border: 1px solid #e5e7eb;
+            border-radius: 8px;
+            font-size: var(--font-medium);
+            width: 250px;
+        }
+
+        .search-btn {
+            padding: var(--spacing-sm) var(--spacing-md);
+            margin-left: var(--spacing-xs);
+        }
+
+        .asha-workers-container {
+            margin-bottom: var(--spacing-xl);
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 16px;
+            padding: var(--spacing-lg);
+        }
+
+        .asha-workers-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--spacing-lg);
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .asha-worker-card {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: var(--spacing-lg);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+            border: 2px solid #e5e7eb;
+            transition: all 0.3s ease;
+        }
+
+        .asha-worker-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+            border-color: #10b981;
+        }
+
+        .worker-header {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-md);
+            margin-bottom: var(--spacing-md);
+        }
+
+        .worker-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            overflow: hidden;
+            position: relative;
+        }
+
+        .worker-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .avatar-placeholder {
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, #10b981, #059669);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 24px;
+        }
+
+        .worker-info {
+            flex: 1;
+        }
+
+        .worker-name {
+            font-size: var(--font-large);
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0 0 4px 0;
+        }
+
+        .worker-id {
+            font-size: var(--font-small);
+            color: var(--text-secondary);
+            margin: 0 0 8px 0;
+        }
+
+        .worker-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: var(--font-tiny);
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .worker-status.active {
+            background: rgba(16, 185, 129, 0.1);
+            color: #059669;
+        }
+
+        .worker-status.training {
+            background: rgba(245, 158, 11, 0.1);
+            color: #d97706;
+        }
+
+        .worker-status.inactive {
+            background: rgba(239, 68, 68, 0.1);
+            color: #dc2626;
+        }
+
+        .worker-actions {
+            display: flex;
+            gap: var(--spacing-xs);
+        }
+
+        .action-btn {
+            width: 36px;
+            height: 36px;
+            border: none;
+            background: rgba(59, 130, 246, 0.1);
+            color: #3b82f6;
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s ease;
+        }
+
+        .action-btn:hover {
+            background: rgba(59, 130, 246, 0.2);
+            transform: scale(1.05);
+        }
+
+        .worker-details {
+            margin-bottom: var(--spacing-md);
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: var(--spacing-sm);
+            margin-bottom: var(--spacing-xs);
+            font-size: var(--font-small);
+            color: var(--text-secondary);
+        }
+
+        .detail-item i {
+            width: 16px;
+            color: var(--primary-medical-blue);
+        }
+
+        .worker-performance {
+            border-top: 1px solid #f3f4f6;
+            padding-top: var(--spacing-md);
+        }
+
+        .performance-metric {
+            margin-bottom: var(--spacing-sm);
+        }
+
+        .performance-metric:last-child {
+            margin-bottom: 0;
+        }
+
+        .metric-label {
+            display: block;
+            font-size: var(--font-small);
+            color: var(--text-secondary);
+            margin-bottom: 4px;
+        }
+
+        .metric-value {
+            font-size: var(--font-small);
+            font-weight: 600;
+            color: var(--text-primary);
+            float: right;
+        }
+
+        .metric-bar {
+            height: 6px;
+            background: #f3f4f6;
+            border-radius: 3px;
+            overflow: hidden;
+            margin-top: 4px;
+            clear: both;
+        }
+
+        .metric-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #059669);
+            transition: width 0.3s ease;
+        }
+
+        .asha-load-more {
+            text-align: center;
+            margin-top: var(--spacing-lg);
+        }
+
+        .asha-analytics {
+            background: rgba(255, 255, 255, 0.9);
+            border-radius: 16px;
+            padding: var(--spacing-xl);
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+
+        .analytics-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--spacing-lg);
+        }
+
+        .analytics-header h3 {
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .analytics-charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: var(--spacing-lg);
+        }
+
+        .analytics-charts-grid .chart-container {
+            background: rgba(255, 255, 255, 0.8);
+            padding: var(--spacing-lg);
+            border-radius: 12px;
+            border: 1px solid #f3f4f6;
+        }
+
+        .analytics-charts-grid .chart-container h4 {
+            margin: 0 0 var(--spacing-md) 0;
+            color: var(--text-primary);
+            font-size: var(--font-medium);
+        }
+
+        .analytics-charts-grid .chart-container canvas {
+            height: 200px !important;
+        }
     </style>
 
     <!-- Scripts -->
@@ -5706,23 +6373,30 @@
             const navItems = document.querySelectorAll('.nav-item');
             
             // Get all sections
-            const appointmentsSection = document.getElementById('appointmentsSection');
+            const appointmentsSection = document.getElementById('consultationBookingsSection');
             const analyticsSection = document.getElementById('analyticsSection');
             const realtimeAlertsSection = document.getElementById('realtimeAlertsSection');
             const doctorsSection = document.getElementById('doctorsSection');
             const patientsSection = document.getElementById('patientsSection');
+            const recentActivitySection = document.getElementById('recentActivitySection');
+            const ashaWorkersSection = document.getElementById('ashaWorkersSection');
             const overviewSection = document.querySelector('.overview-section');
             const sosSection = document.querySelector('.sos-alerts-section');
             const monitoringSection = document.querySelector('.monitoring-section');
             
-            // Hide all sections initially except overview
+            // Hide ALL sections initially (including overview sections)
             const allSections = [
                 appointmentsSection, analyticsSection, realtimeAlertsSection, 
-                doctorsSection, patientsSection
+                doctorsSection, patientsSection, recentActivitySection, ashaWorkersSection
             ];
             allSections.forEach(section => {
                 if (section) section.style.display = 'none';
             });
+            
+            // Hide overview sections initially too
+            if (overviewSection) overviewSection.style.display = 'none';
+            if (sosSection) sosSection.style.display = 'none';
+            if (monitoringSection) monitoringSection.style.display = 'none';
             
             navItems.forEach(item => {
                 item.addEventListener('click', (e) => {
@@ -5737,6 +6411,10 @@
                     const navText = item.querySelector('span').textContent.trim();
                     console.log('Navigation clicked:', navText);
                     
+                    // Save current section to localStorage and URL hash
+                    localStorage.setItem('activeSection', navText);
+                    window.location.hash = navText.toLowerCase().replace(/\s+/g, '-');
+                    
                     // Hide all sections
                     if (overviewSection) overviewSection.style.display = 'none';
                     if (sosSection) sosSection.style.display = 'none';
@@ -5746,89 +6424,184 @@
                     });
                     
                     // Show the appropriate section based on navigation text
-                    switch(navText) {
-                        case 'Dashboard':
-                        case 'Overview':
-                            // Show main dashboard sections
-                            if (overviewSection) {
-                                overviewSection.style.display = 'block';
-                                console.log('Overview section displayed');
-                            }
-                            if (sosSection) {
-                                sosSection.style.display = 'block';
-                                console.log('SOS section displayed');
-                            }
-                            if (monitoringSection) {
-                                monitoringSection.style.display = 'block';
-                                console.log('Monitoring section displayed');
-                            }
-                            break;
-                            
-                        case 'Analytics':
-                            if (analyticsSection) {
-                                analyticsSection.style.display = 'block';
-                                loadAnalyticsCharts();
-                            }
-                            break;
-                            
-                        case 'Real-time Alerts':
-                        case 'Alerts':
-                            if (realtimeAlertsSection) {
-                                realtimeAlertsSection.style.display = 'block';
-                                loadRealTimeAlerts();
-                            }
-                            break;
-                            
-                        case 'Doctors':
-                        case 'Staff & Admins':
-                            if (doctorsSection) {
-                                doctorsSection.style.display = 'block';
-                                loadDoctorsData();
-                            }
-                            break;
-                            
-                        case 'Patients':
-                            if (patientsSection) {
-                                patientsSection.style.display = 'block';
-                                loadPatientsData();
-                            }
-                            break;
-                            
-                        case 'Appointments':
-                            if (appointmentsSection) {
-                                appointmentsSection.style.display = 'block';
-                                loadAppointmentsData();
-                            }
-                            break;
-                            
-                        case 'Consultations':
-                            // Show appointments section for consultations
-                            if (appointmentsSection) {
-                                appointmentsSection.style.display = 'block';
-                                loadAppointmentsData();
-                            }
-                            break;
-                            
-                        default:
-                            // For other nav items, show overview
-                            console.log('Unknown navigation item:', navText);
-                            if (overviewSection) overviewSection.style.display = 'block';
-                            if (sosSection) sosSection.style.display = 'block';
-                            if (monitoringSection) monitoringSection.style.display = 'block';
-                            break;
-                    }
+                    showSection(navText);
                 });
             });
             
-            // Set Dashboard as active by default
-            const dashboardNav = Array.from(navItems).find(item => 
-                item.querySelector('span') && 
-                (item.querySelector('span').textContent.trim() === 'Dashboard' || 
-                 item.querySelector('span').textContent.trim() === 'Overview')
-            );
-            if (dashboardNav) {
-                dashboardNav.classList.add('active');
+            // Function to show a specific section
+            function showSection(navText) {
+                // Get all sections
+                const appointmentsSection = document.getElementById('consultationBookingsSection');
+                const analyticsSection = document.getElementById('analyticsSection');
+                const realtimeAlertsSection = document.getElementById('realtimeAlertsSection');
+                const doctorsSection = document.getElementById('doctorsSection');
+                const patientsSection = document.getElementById('patientsSection');
+                const ashaWorkersSection = document.getElementById('ashaWorkersSection');
+                const overviewSection = document.querySelector('.overview-section');
+                const sosSection = document.querySelector('.sos-alerts-section');
+                const monitoringSection = document.querySelector('.monitoring-section');
+                
+                switch(navText) {
+                    case 'Dashboard':
+                    case 'Overview':
+                        // Show main dashboard sections
+                        if (overviewSection) {
+                            overviewSection.style.display = 'block';
+                            console.log('Overview section displayed');
+                        }
+                        if (sosSection) {
+                            sosSection.style.display = 'block';
+                            console.log('SOS section displayed');
+                        }
+                        if (monitoringSection) {
+                            monitoringSection.style.display = 'block';
+                            console.log('Monitoring section displayed');
+                        }
+                        break;
+                        
+                    case 'Analytics':
+                        if (analyticsSection) {
+                            analyticsSection.style.display = 'block';
+                            loadAnalyticsCharts();
+                        }
+                        break;
+                        
+                    case 'Real-time Alerts':
+                    case 'Alerts':
+                        if (realtimeAlertsSection) {
+                            realtimeAlertsSection.style.display = 'block';
+                            loadRealTimeAlerts();
+                        }
+                        break;
+                        
+                    case 'Doctors':
+                    case 'Staff & Admins':
+                        if (doctorsSection) {
+                            doctorsSection.style.display = 'block';
+                            loadDoctorsData();
+                        }
+                        break;
+                        
+                    case 'Patients':
+                        if (patientsSection) {
+                            patientsSection.style.display = 'block';
+                            loadPatientsData();
+                        }
+                        break;
+                        
+                    case 'ASHA Workers':
+                        if (ashaWorkersSection) {
+                            ashaWorkersSection.style.display = 'block';
+                            loadASHAData();
+                        }
+                        break;
+                        
+                    case 'Appointments':
+                        if (appointmentsSection) {
+                            appointmentsSection.style.display = 'block';
+                            loadAppointmentsData();
+                        }
+                        break;
+                        
+                    case 'Consultations':
+                        // Show appointments section for consultations
+                        if (appointmentsSection) {
+                            appointmentsSection.style.display = 'block';
+                            loadAppointmentsData();
+                        }
+                        break;
+                        
+                    default:
+                        // For other nav items, show overview
+                        console.log('Unknown navigation item:', navText);
+                        if (overviewSection) overviewSection.style.display = 'block';
+                        if (sosSection) sosSection.style.display = 'block';
+                        if (monitoringSection) monitoringSection.style.display = 'block';
+                        break;
+                }
             }
+            
+            // Function to restore active section on page load
+            function restoreActiveSection() {
+                // Check URL hash first, then localStorage
+                let activeSection = null;
+                
+                if (window.location.hash) {
+                    const hash = window.location.hash.substring(1);
+                    activeSection = hash.replace(/-/g, ' ');
+                    // Capitalize first letter of each word
+                    activeSection = activeSection.replace(/\b\w/g, l => l.toUpperCase());
+                } else {
+                    activeSection = localStorage.getItem('activeSection');
+                }
+                
+                if (activeSection && activeSection !== 'Dashboard' && activeSection !== 'Overview') {
+                    // Find the navigation item and activate it
+                    const navItems = document.querySelectorAll('.nav-item');
+                    const targetNav = Array.from(navItems).find(item => {
+                        const span = item.querySelector('span');
+                        return span && span.textContent.trim() === activeSection;
+                    });
+                    
+                    if (targetNav) {
+                        // Remove active from all nav items
+                        navItems.forEach(nav => nav.classList.remove('active'));
+                        
+                        // Add active to target nav
+                        targetNav.classList.add('active');
+                        
+                        // Hide all sections
+                        const overviewSection = document.querySelector('.overview-section');
+                        const sosSection = document.querySelector('.sos-alerts-section');
+                        const monitoringSection = document.querySelector('.monitoring-section');
+                        const allSections = [
+                            document.getElementById('appointmentsSection'),
+                            document.getElementById('analyticsSection'),
+                            document.getElementById('realtimeAlertsSection'),
+                            document.getElementById('doctorsSection'),
+                            document.getElementById('patientsSection'),
+                            document.getElementById('recentActivitySection'),
+                            document.getElementById('ashaWorkersSection')
+                        ];
+                        
+                        if (overviewSection) overviewSection.style.display = 'none';
+                        if (sosSection) sosSection.style.display = 'none';
+                        if (monitoringSection) monitoringSection.style.display = 'none';
+                        allSections.forEach(section => {
+                            if (section) section.style.display = 'none';
+                        });
+                        
+                        // Show the target section
+                        showSection(activeSection);
+                        
+                        console.log('Restored section:', activeSection);
+                        return;
+                    }
+                }
+                
+                // Default to overview if no specific section found
+                const navItems = document.querySelectorAll('.nav-item');
+                const dashboardNav = Array.from(navItems).find(item => 
+                    item.querySelector('span') && 
+                    (item.querySelector('span').textContent.trim() === 'Dashboard' || 
+                     item.querySelector('span').textContent.trim() === 'Overview')
+                );
+                
+                // Remove active from all nav items
+                navItems.forEach(nav => nav.classList.remove('active'));
+                
+                // Set dashboard as active
+                if (dashboardNav) {
+                    dashboardNav.classList.add('active');
+                }
+                
+                showSection('Overview');
+            }
+            
+            // Remove default active setting - let restore function handle it
+            
+            // Restore the active section immediately on page load
+            restoreActiveSection();
         }
 
         // Load appointments data
@@ -5933,9 +6706,373 @@
             }
         }
 
-        // Initialize charts (placeholder - would use Chart.js in real implementation)
+        // Load ASHA Workers data
+        async function loadASHAData() {
+            console.log('Loading ASHA Workers data...');
+            
+            try {
+                const response = await fetch('/api/admin/asha-workers');
+                if (response.ok) {
+                    const ashaData = await response.json();
+                    updateASHADisplay(ashaData);
+                }
+            } catch (error) {
+                console.log('Using sample ASHA data:', error);
+                // Initialize ASHA charts with sample data
+                initializeASHACharts();
+            }
+        }
+
+        // Initialize ASHA Charts
+        function initializeASHACharts() {
+            // Clean up existing charts
+            ['ashaReportChart', 'ashaVisitChart', 'ashaDistrictChart'].forEach(chartId => {
+                if (chartInstances[chartId]) {
+                    chartInstances[chartId].destroy();
+                }
+            });
+
+            // ASHA Report Submission Chart
+            const reportCtx = document.getElementById('ashaReportChart');
+            if (reportCtx) {
+                chartInstances.ashaReportChart = new Chart(reportCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                        datasets: [{
+                            label: 'Report Submission Rate',
+                            data: [88, 92, 85, 95],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: {
+                                    color: '#f3f4f6'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // ASHA Home Visit Chart
+            const visitCtx = document.getElementById('ashaVisitChart');
+            if (visitCtx) {
+                chartInstances.ashaVisitChart = new Chart(visitCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Completed', 'Pending', 'Missed'],
+                        datasets: [{
+                            data: [85, 10, 5],
+                            backgroundColor: [
+                                '#10b981',
+                                '#f59e0b',
+                                '#ef4444'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // ASHA District Performance Chart
+            const districtCtx = document.getElementById('ashaDistrictChart');
+            if (districtCtx) {
+                chartInstances.ashaDistrictChart = new Chart(districtCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Patiala', 'Fatehgarh', 'Sangrur', 'Barnala'],
+                        datasets: [{
+                            label: 'Performance Score',
+                            data: [92, 88, 85, 90],
+                            backgroundColor: '#10b981',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                max: 100,
+                                grid: {
+                                    color: '#f3f4f6'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return value + '%';
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            console.log('ASHA charts initialized');
+        }
+
+        // Chart instances storage
+        let chartInstances = {};
+
+        // Initialize charts with Chart.js
         function initializeCharts() {
-            // This would initialize actual Chart.js charts
+            console.log('Initializing Chart.js charts...');
+            
+            // Clean up existing charts
+            Object.values(chartInstances).forEach(chart => {
+                if (chart) chart.destroy();
+            });
+            chartInstances = {};
+
+            // Initialize Consultation Trends Chart
+            const consultationCtx = document.getElementById('consultationTrendsChart');
+            if (consultationCtx) {
+                chartInstances.consultationTrends = new Chart(consultationCtx, {
+                    type: 'line',
+                    data: {
+                        labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                        datasets: [{
+                            label: 'Video Calls',
+                            data: [65, 75, 80, 85, 90, 70, 60],
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }, {
+                            label: 'Phone Calls',
+                            data: [45, 55, 60, 65, 70, 50, 40],
+                            borderColor: '#10b981',
+                            backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                            tension: 0.4,
+                            fill: true
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#f3f4f6'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize Disease Distribution Chart
+            const diseaseCtx = document.getElementById('diseaseDistributionChart');
+            if (diseaseCtx) {
+                chartInstances.diseaseDistribution = new Chart(diseaseCtx, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['Respiratory', 'Cardiovascular', 'Diabetes', 'Mental Health', 'Others'],
+                        datasets: [{
+                            data: [30, 25, 20, 15, 10],
+                            backgroundColor: [
+                                '#2563eb',
+                                '#10b981',
+                                '#f59e0b',
+                                '#8b5cf6',
+                                '#ef4444'
+                            ],
+                            borderWidth: 0
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 20
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize Doctor Performance Chart
+            const doctorCtx = document.getElementById('doctorPerformanceChart');
+            if (doctorCtx) {
+                chartInstances.doctorPerformance = new Chart(doctorCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Dr. Smith', 'Dr. Johnson', 'Dr. Wilson', 'Dr. Brown', 'Dr. Davis'],
+                        datasets: [{
+                            label: 'Consultations',
+                            data: [85, 78, 92, 65, 88],
+                            backgroundColor: '#2563eb',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#f3f4f6'
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize Patient Demographics Chart
+            const demographicsCtx = document.getElementById('patientDemographicsChart');
+            if (demographicsCtx) {
+                chartInstances.patientDemographics = new Chart(demographicsCtx, {
+                    type: 'polarArea',
+                    data: {
+                        labels: ['0-18', '19-35', '36-50', '51-65', '65+'],
+                        datasets: [{
+                            data: [15, 35, 25, 20, 5],
+                            backgroundColor: [
+                                'rgba(37, 99, 235, 0.7)',
+                                'rgba(16, 185, 129, 0.7)',
+                                'rgba(245, 158, 11, 0.7)',
+                                'rgba(139, 92, 246, 0.7)',
+                                'rgba(239, 68, 68, 0.7)'
+                            ]
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: {
+                                    usePointStyle: true,
+                                    padding: 15
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
+            // Initialize Revenue Analytics Chart
+            const revenueCtx = document.getElementById('revenueAnalyticsChart');
+            if (revenueCtx) {
+                chartInstances.revenueAnalytics = new Chart(revenueCtx, {
+                    type: 'bar',
+                    data: {
+                        labels: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep'],
+                        datasets: [{
+                            label: 'Revenue',
+                            data: [65000, 78000, 85000, 92000, 88000, 95000, 102000, 98000, 105000],
+                            backgroundColor: 'rgba(37, 99, 235, 0.8)',
+                            borderRadius: 4
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                display: false
+                            }
+                        },
+                        scales: {
+                            y: {
+                                beginAtZero: true,
+                                grid: {
+                                    color: '#f3f4f6'
+                                },
+                                ticks: {
+                                    callback: function(value) {
+                                        return '₹' + (value / 1000) + 'K';
+                                    }
+                                }
+                            },
+                            x: {
+                                grid: {
+                                    display: false
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+
             console.log('Charts initialized with sample data');
         }
 
