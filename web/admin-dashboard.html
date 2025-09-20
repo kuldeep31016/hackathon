@@ -1717,6 +1717,193 @@
                 left: 100%;
             }
         }
+
+        /* Consultation Bookings Styles */
+        .consultation-bookings-section {
+            margin-bottom: 30px;
+        }
+
+        .bookings-container {
+            min-height: 200px;
+        }
+
+        .bookings-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(400px, 1fr));
+            gap: 20px;
+            margin-top: 20px;
+        }
+
+        .booking-card {
+            background: white;
+            border-radius: 15px;
+            padding: 20px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+            border-left: 4px solid #2563eb;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .booking-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        .booking-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .booking-id {
+            background: #e0f2fe;
+            color: #0277bd;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            font-family: 'Courier New', monospace;
+        }
+
+        .booking-status {
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-size: 0.7rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            margin-left: auto;
+        }
+
+        .status-scheduled {
+            background: #dcfce7;
+            color: #166534;
+        }
+
+        .status-in-progress {
+            background: #fef3c7;
+            color: #92400e;
+        }
+
+        .status-completed {
+            background: #e0f2fe;
+            color: #0277bd;
+        }
+
+        .doctor-info {
+            display: flex;
+            align-items: center;
+            margin-bottom: 15px;
+        }
+
+        .doctor-avatar {
+            width: 40px;
+            height: 40px;
+            background: #2563eb;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 600;
+            margin-right: 12px;
+        }
+
+        .doctor-details h4 {
+            margin: 0;
+            font-size: 1rem;
+            color: #1e293b;
+        }
+
+        .doctor-details p {
+            margin: 2px 0 0 0;
+            font-size: 0.85rem;
+            color: #64748b;
+        }
+
+        .booking-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+            margin-bottom: 15px;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            font-size: 0.85rem;
+        }
+
+        .detail-item i {
+            margin-right: 8px;
+            color: #64748b;
+            width: 16px;
+        }
+
+        .patient-info {
+            background: #f8fafc;
+            padding: 12px;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
+        .patient-info h5 {
+            margin: 0 0 8px 0;
+            font-size: 0.9rem;
+            color: #374151;
+        }
+
+        .patient-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 8px;
+            font-size: 0.8rem;
+            color: #6b7280;
+        }
+
+        .booking-actions {
+            display: flex;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .btn-sm {
+            padding: 6px 12px;
+            font-size: 0.8rem;
+            border-radius: 6px;
+        }
+
+        .loading-state, .empty-state {
+            text-align: center;
+            padding: 40px;
+            color: #64748b;
+        }
+
+        .loading-state i {
+            font-size: 2rem;
+            margin-bottom: 10px;
+            color: #2563eb;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 15px;
+            color: #d1d5db;
+        }
+
+        @media (max-width: 768px) {
+            .bookings-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .booking-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .patient-details {
+                grid-template-columns: 1fr;
+            }
+        }
     </style>
 </head>
 <body class="dashboard-page">
@@ -2118,6 +2305,38 @@
                             <div class="activity-description">Emergency case resolved - Patient stable</div>
                         </div>
                         <div class="activity-time">32 minutes ago</div>
+                    </div>
+                </div>
+            </section>
+
+            <!-- Consultation Bookings Section -->
+            <section class="consultation-bookings-section">
+                <div class="section-header">
+                    <h2 class="section-title">
+                        <i class="fas fa-calendar-check"></i>
+                        Recent Consultation Bookings
+                    </h2>
+                    <div class="section-actions">
+                        <button class="btn btn-outline" id="refreshBookings">
+                            <i class="fas fa-sync-alt"></i> Refresh
+                        </button>
+                        <button class="btn btn-primary" id="viewAllBookings">
+                            <i class="fas fa-list"></i> View All
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="bookings-container" id="consultationBookings">
+                    <div class="loading-state" id="bookingsLoading">
+                        <i class="fas fa-spinner fa-spin"></i>
+                        Loading consultation bookings...
+                    </div>
+                    <div class="empty-state" id="bookingsEmpty" style="display: none;">
+                        <i class="fas fa-calendar-times"></i>
+                        <p>No consultation bookings found</p>
+                    </div>
+                    <div class="bookings-grid" id="bookingsGrid">
+                        <!-- Booking cards will be inserted here dynamically -->
                     </div>
                 </div>
             </section>
@@ -2754,6 +2973,24 @@
                         this.showNotifications();
                     });
                 }
+
+                // Consultation bookings refresh button
+                const refreshBookingsBtn = document.getElementById('refreshBookings');
+                if (refreshBookingsBtn) {
+                    refreshBookingsBtn.addEventListener('click', () => {
+                        this.loadConsultationBookings();
+                    });
+                }
+
+                // View all bookings button
+                const viewAllBookingsBtn = document.getElementById('viewAllBookings');
+                if (viewAllBookingsBtn) {
+                    viewAllBookingsBtn.addEventListener('click', () => {
+                        // Navigate to full bookings page
+                        console.log('View all bookings clicked');
+                        alert('View All Bookings - Feature coming soon!');
+                    });
+                }
             }
 
             async loadData() {
@@ -2762,7 +2999,8 @@
                     await Promise.all([
                         this.loadOverviewData(),
                         this.loadSOSAlerts(),
-                        this.loadRecentActivity()
+                        this.loadRecentActivity(),
+                        this.loadConsultationBookings()
                     ]);
                 } catch (error) {
                     console.error('Error loading dashboard data:', error);
@@ -2784,6 +3022,152 @@
                 // Recent activity is already rendered in HTML
                 // In a real application, this would fetch from API
                 console.log('Recent activity loaded');
+            }
+
+            async loadConsultationBookings() {
+                const loadingElement = document.getElementById('bookingsLoading');
+                const emptyElement = document.getElementById('bookingsEmpty');
+                const gridElement = document.getElementById('bookingsGrid');
+
+                try {
+                    // Show loading state
+                    loadingElement.style.display = 'block';
+                    emptyElement.style.display = 'none';
+                    gridElement.innerHTML = '';
+
+                    // Fetch consultation bookings from API
+                    const response = await fetch('/api/consultations');
+                    const data = await response.json();
+
+                    // Hide loading state
+                    loadingElement.style.display = 'none';
+
+                    if (data.success && data.bookings && data.bookings.length > 0) {
+                        this.renderConsultationBookings(data.bookings);
+                    } else {
+                        emptyElement.style.display = 'block';
+                    }
+
+                } catch (error) {
+                    console.error('Error loading consultation bookings:', error);
+                    loadingElement.style.display = 'none';
+                    emptyElement.style.display = 'block';
+                    emptyElement.innerHTML = `
+                        <i class="fas fa-exclamation-triangle"></i>
+                        <p>Failed to load consultation bookings</p>
+                    `;
+                }
+            }
+
+            renderConsultationBookings(bookings) {
+                const gridElement = document.getElementById('bookingsGrid');
+                
+                gridElement.innerHTML = bookings.map(booking => {
+                    const doctorInitial = booking.doctorId?.name ? booking.doctorId.name.charAt(0).toUpperCase() : 'D';
+                    const appointmentDate = new Date(booking.appointmentTime);
+                    const bookedDate = new Date(booking.bookedAt);
+                    
+                    return `
+                        <div class="booking-card">
+                            <div class="booking-header">
+                                <span class="booking-id">${booking.bookingId}</span>
+                                <span class="booking-status status-${booking.status}">
+                                    ${booking.status.replace('-', ' ')}
+                                </span>
+                            </div>
+                            
+                            <div class="doctor-info">
+                                <div class="doctor-avatar">${doctorInitial}</div>
+                                <div class="doctor-details">
+                                    <h4>${booking.doctorId?.name || 'Unknown Doctor'}</h4>
+                                    <p>${booking.specialty || booking.doctorId?.specialization || 'General Medicine'}</p>
+                                </div>
+                            </div>
+                            
+                            <div class="patient-info">
+                                <h5><i class="fas fa-user"></i> Patient Information</h5>
+                                <div class="patient-details">
+                                    <div><strong>Name:</strong> ${booking.patientDetails?.name || 'N/A'}</div>
+                                    <div><strong>Phone:</strong> ${booking.patientDetails?.phone || 'N/A'}</div>
+                                    <div><strong>Age:</strong> ${booking.patientDetails?.age || 'N/A'}</div>
+                                    <div><strong>Gender:</strong> ${booking.patientDetails?.gender || 'N/A'}</div>
+                                </div>
+                            </div>
+                            
+                            <div class="booking-details">
+                                <div class="detail-item">
+                                    <i class="fas fa-video"></i>
+                                    <span>${booking.consultationType.charAt(0).toUpperCase() + booking.consultationType.slice(1)} Call</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-clock"></i>
+                                    <span>${appointmentDate.toLocaleString()}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-rupee-sign"></i>
+                                    <span>₹${booking.consultationFee}</span>
+                                </div>
+                                <div class="detail-item">
+                                    <i class="fas fa-calendar-plus"></i>
+                                    <span>Booked: ${bookedDate.toLocaleDateString()}</span>
+                                </div>
+                            </div>
+                            
+                            ${booking.symptoms?.primarySymptoms?.length ? `
+                                <div class="symptoms-info">
+                                    <h5><i class="fas fa-notes-medical"></i> Symptoms</h5>
+                                    <p>${booking.symptoms.primarySymptoms.join(', ')}</p>
+                                </div>
+                            ` : ''}
+                            
+                            <div class="booking-actions">
+                                <button class="btn btn-sm btn-outline" onclick="adminDashboard.viewBookingDetails('${booking.bookingId}')">
+                                    <i class="fas fa-eye"></i> View Details
+                                </button>
+                                ${booking.status === 'scheduled' ? `
+                                    <button class="btn btn-sm btn-primary" onclick="adminDashboard.updateBookingStatus('${booking.bookingId}', 'in-progress')">
+                                        <i class="fas fa-play"></i> Start
+                                    </button>
+                                ` : ''}
+                                ${booking.status === 'in-progress' ? `
+                                    <button class="btn btn-sm btn-success" onclick="adminDashboard.updateBookingStatus('${booking.bookingId}', 'completed')">
+                                        <i class="fas fa-check"></i> Complete
+                                    </button>
+                                ` : ''}
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+            }
+
+            async updateBookingStatus(bookingId, status) {
+                try {
+                    const response = await fetch(`/api/consultations/${bookingId}/status`, {
+                        method: 'PATCH',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({ status })
+                    });
+
+                    const data = await response.json();
+                    
+                    if (data.success) {
+                        this.showSuccess(`Booking ${bookingId} status updated to ${status}`);
+                        this.loadConsultationBookings(); // Reload bookings
+                    } else {
+                        this.showError('Failed to update booking status');
+                    }
+                } catch (error) {
+                    console.error('Error updating booking status:', error);
+                    this.showError('Failed to update booking status');
+                }
+            }
+
+            viewBookingDetails(bookingId) {
+                // Open modal or redirect to detailed view
+                console.log('Viewing details for booking:', bookingId);
+                alert(`Viewing details for booking: ${bookingId}`);
             }
 
             refreshData() {
@@ -2921,7 +3305,7 @@
             }
             
             // Initialize dashboard
-            new AdminDashboard();
+            window.adminDashboard = new AdminDashboard();
         });
 
         // Handle logout

@@ -24,10 +24,24 @@ const ConfirmationScreen = ({
   symptoms,
   onClose 
 }) => {
-  const [bookingId, setBookingId] = useState('');
-  const [appointmentTime, setAppointmentTime] = useState('');
+  // Generate booking ID immediately when component initializes
+  const generateBookingId = () => {
+    const prefix = 'NBH';
+    const timestamp = Date.now().toString(36).toUpperCase();
+    const random = Math.random().toString(36).substr(2, 5).toUpperCase();
+    return `${prefix}${timestamp}${random}`;
+  };
+
+  const [bookingId, setBookingId] = useState(() => {
+    const generatedId = generateBookingId();
+    console.log('🆔 Initial booking ID generated:', generatedId);
+    return generatedId;
+  });
+  const [appointmentTime, setAppointmentTime] = useState(new Date().toLocaleString());
   const [rating, setRating] = useState(0);
   const [showRating, setShowRating] = useState(false);
+
+  console.log('🔍 Component render - bookingId:', bookingId);
 
   const translations = {
     en: {
@@ -172,16 +186,128 @@ const ConfirmationScreen = ({
 
   const t = translations[language];
 
+  // Debug log to check bookingId state
+  console.log('🔍 Current bookingId state:', bookingId);
+
+  const saveBookingToBackend = async () => {
+    try {
+      // Use the booking ID from state (already generated in useEffect)
+      const currentBookingId = bookingId;
+      
+      if (!currentBookingId) {
+        console.log('⚠️ No booking ID available yet');
+        return;
+      }
+
+      console.log('🆔 Using booking ID for backend:', currentBookingId);
+
+      const bookingData = {
+        bookingId: currentBookingId,
+        doctorId: doctor?._id || doctor?.id,
+        patientDetails: {
+          name: personalDetails?.name || 'Patient',
+          phone: personalDetails?.phone || '',
+          age: parseInt(personalDetails?.age) || 0,
+          gender: personalDetails?.gender || '',
+          email: personalDetails?.email || ''
+        },
+        consultationType: consultationType?.toLowerCase() || 'video',
+        specialty: doctor?.specialty || doctor?.specialization || 'General Medicine',
+        appointmentTime: new Date(),
+        symptoms: {
+          primarySymptoms: symptoms?.symptoms || symptoms?.selectedSymptoms || [],
+          duration: symptoms?.duration || '',
+          severity: symptoms?.severity || '',
+          description: symptoms?.description || ''
+        },
+        consultationFee: parseFloat(paymentDetails?.amount) || 500,
+        paymentMethod: paymentDetails?.method || 'UPI',
+        paymentStatus: 'completed',
+        status: 'confirmed'
+      };
+
+      console.log('Sending booking data to backend:', bookingData);
+
+      // Try network IP for mobile device
+      const response = await fetch('http://192.168.1.5:3001/api/consultations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Booking saved successfully:', result);
+        console.log('✅ Booking ID confirmed:', currentBookingId);
+      } else {
+        console.error('❌ Failed to save booking:', response.status);
+      }
+    } catch (error) {
+      console.error('❌ Error saving booking to backend:', error);
+    }
+  };
+
   useEffect(() => {
-    // Generate booking ID and appointment time
-    const id = 'NBH' + Math.random().toString(36).substr(2, 9).toUpperCase();
-    setBookingId(id);
+    // Use the booking ID that was already generated during component initialization
+    console.log('🆔 useEffect - Using existing booking ID:', bookingId);
     
-    // Generate appointment time (next available slot)
-    const now = new Date();
-    const appointmentDate = new Date(now.getTime() + 30 * 60000); // 30 minutes from now
-    setAppointmentTime(appointmentDate.toLocaleString());
+    // Save to backend with the existing booking ID
+    saveBookingToBackendWithId(bookingId);
   }, []);
+
+  const saveBookingToBackendWithId = async (bookingIdToUse) => {
+    try {
+      console.log('🆔 Using booking ID for backend:', bookingIdToUse);
+
+      const bookingData = {
+        bookingId: bookingIdToUse,
+        doctorId: doctor?._id || doctor?.id,
+        patientDetails: {
+          name: personalDetails?.name || 'Patient',
+          phone: personalDetails?.phone || '',
+          age: parseInt(personalDetails?.age) || 0,
+          gender: personalDetails?.gender || '',
+          email: personalDetails?.email || ''
+        },
+        consultationType: consultationType?.toLowerCase() || 'video',
+        specialty: doctor?.specialty || doctor?.specialization || 'General Medicine',
+        appointmentTime: new Date(),
+        symptoms: {
+          primarySymptoms: symptoms?.symptoms || symptoms?.selectedSymptoms || [],
+          duration: symptoms?.duration || '',
+          severity: symptoms?.severity || '',
+          description: symptoms?.description || ''
+        },
+        consultationFee: parseFloat(paymentDetails?.amount) || 500,
+        paymentMethod: paymentDetails?.method || 'UPI',
+        paymentStatus: 'completed',
+        status: 'confirmed'
+      };
+
+      console.log('Sending booking data to backend:', bookingData);
+
+      // Try network IP for mobile device
+      const response = await fetch('http://192.168.1.5:3001/api/consultations', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify(bookingData)
+      });
+
+      if (response.ok) {
+        const result = await response.json();
+        console.log('✅ Booking saved successfully:', result);
+        console.log('✅ Booking ID confirmed:', bookingIdToUse);
+      } else {
+        console.error('❌ Failed to save booking:', response.status);
+      }
+    } catch (error) {
+      console.error('❌ Error saving booking to backend:', error);
+    }
+  };
 
   const getConsultationTypeText = () => {
     switch (consultationType) {
@@ -336,7 +462,9 @@ Download Nabha Health App for more features.
         
         <View style={styles.bookingIdContainer}>
           <Text style={styles.bookingIdLabel}>{t.bookingId}:</Text>
-          <Text style={styles.bookingIdValue}>{bookingId}</Text>
+          <Text style={styles.bookingIdValue}>
+            {bookingId}
+          </Text>
         </View>
       </View>
 
