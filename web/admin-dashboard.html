@@ -2889,13 +2889,17 @@
             
             try {
                 const user = JSON.parse(adminUser);
-                if (user.role !== 'admin') {
-                    console.log('User is not admin, redirecting to login...');
+                console.log('👤 Parsed admin user:', user);
+                
+                if (!user.adminLevel || !['super_admin', 'admin', 'moderator'].includes(user.adminLevel)) {
+                    console.log('❌ User does not have admin privileges, adminLevel:', user.adminLevel);
                     localStorage.removeItem('adminToken');
                     localStorage.removeItem('adminUser');
                     window.location.href = '/admin';
                     return;
                 }
+                
+                console.log('✅ Admin privileges confirmed:', user.adminLevel);
                 
                 // Update user display
                 const userAvatar = document.querySelector('.user-avatar');
@@ -3594,19 +3598,51 @@
     
     <script>
         document.addEventListener('DOMContentLoaded', async function() {
-            // Check authentication
-            if (!isAuthenticated() || getUserRole() !== 'admin') {
-                window.location.href = 'admin-login.html';
+            // Check authentication - use admin-specific tokens
+            const adminToken = localStorage.getItem('adminToken');
+            const adminUser = localStorage.getItem('adminUser');
+            
+            console.log('🔐 Dashboard auth check:', { 
+                hasToken: !!adminToken, 
+                hasUser: !!adminUser 
+            });
+            
+            if (!adminToken || !adminUser) {
+                console.log('No admin authentication found, redirecting to login...');
+                window.location.href = '/admin';
                 return;
             }
             
-            // Load components
-            await loadComponent('header', 'components/header.html');
-            await loadComponent('sidebar', 'components/sidebar.html');
-            await loadComponent('modals', 'components/modals.html');
+            try {
+                const user = JSON.parse(adminUser);
+                if (!user.adminLevel || !['super_admin', 'admin', 'moderator'].includes(user.adminLevel)) {
+                    console.log('User does not have admin privileges, redirecting to login...');
+                    localStorage.removeItem('adminToken');
+                    localStorage.removeItem('adminUser');
+                    window.location.href = '/admin';
+                    return;
+                }
+            } catch (error) {
+                console.error('Error parsing admin user data:', error);
+                localStorage.removeItem('adminToken');
+                localStorage.removeItem('adminUser');
+                window.location.href = '/admin';
+                return;
+            }
+            
+            console.log('🚀 Starting component loading...');
+            
+            // Load components with correct paths
+            await loadComponent('header', '/web/components/header.html');
+            await loadComponent('sidebar', '/web/components/sidebar.html');
+            await loadComponent('modals', '/web/components/modals.html');
+            
+            console.log('🎛️ Initializing admin dashboard...');
             
             // Initialize dashboard
             await initializeAdminDashboard();
+            
+            console.log('✅ Dashboard initialization complete!');
         });
     </script>
 </body>

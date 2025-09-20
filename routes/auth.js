@@ -345,10 +345,28 @@ router.post('/admin/login', async (req, res) => {
       }
     }
 
-    // Update login information
-    adminUser.lastLogin = new Date();
-    adminUser.addLoginHistory(req.ip, req.get('User-Agent'));
-    await adminUser.save();
+    // Update login information using findByIdAndUpdate to avoid version conflicts
+    const currentTime = new Date();
+    const loginEntry = {
+      loginTime: currentTime,
+      ipAddress: req.ip,
+      userAgent: req.get('User-Agent') || 'Unknown'
+    };
+    
+    // Use findByIdAndUpdate to avoid version conflicts during concurrent logins
+    await Admin.findByIdAndUpdate(
+      adminUser._id,
+      {
+        $set: { lastLogin: currentTime },
+        $push: { 
+          loginHistory: {
+            $each: [loginEntry],
+            $slice: -10 // Keep only last 10 login entries to match the model method
+          }
+        }
+      },
+      { new: true }
+    );
 
     // Generate token
     const token = generateToken(adminUser._id, 'admin');

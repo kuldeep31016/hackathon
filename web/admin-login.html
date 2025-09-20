@@ -382,8 +382,8 @@
             // Check backend connectivity
             async function checkBackendConnection() {
                 try {
-                    const response = await fetch('http://localhost:3000/api/auth/login', {
-                        method: 'HEAD'
+                    const response = await fetch('http://localhost:3001/api/health', {
+                        method: 'GET'
                     });
                     systemStatus.innerHTML = '<i class="fas fa-circle"></i> System Online';
                     systemStatus.className = 'system-status online';
@@ -417,7 +417,7 @@
                     console.log('Attempting login with:', { email, password: '***' });
                     
                     // Make login request to backend
-                    const response = await fetch('http://localhost:3000/api/auth/login', {
+                    const response = await fetch('http://localhost:3001/api/auth/admin/login', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -431,26 +431,21 @@
                     const data = await response.json();
                     console.log('Login response:', data);
                     
-                    if (response.ok && data.success) {
-                        // Check if user is admin
-                        if (data.user && data.user.role === 'admin') {
-                            // Store authentication data
-                            localStorage.setItem('adminToken', data.token);
-                            localStorage.setItem('adminUser', JSON.stringify(data.user));
-                            
-                            // Show success message
-                            successMessage.textContent = 'Login successful! Redirecting to dashboard...';
-                            successMessage.style.display = 'block';
-                            submitBtn.innerHTML = '<span class="btn-text"><i class="fas fa-check"></i> Success! Redirecting...</span>';
-                            submitBtn.style.background = '#10b981';
-                            
-                            // Redirect to admin dashboard
-                            setTimeout(() => {
-                                window.location.href = '/admin/dashboard';
-                            }, 2000);
-                        } else {
-                            throw new Error('Access denied. Admin credentials required.');
-                        }
+                    if (response.ok && data.accessToken) {
+                        // Store authentication data (admin login returns different structure)
+                        localStorage.setItem('adminToken', data.accessToken);
+                        localStorage.setItem('adminUser', JSON.stringify(data.admin));
+                        
+                        // Show success message
+                        successMessage.textContent = 'Login successful! Redirecting to dashboard...';
+                        successMessage.style.display = 'block';
+                        submitBtn.innerHTML = '<span class="btn-text"><i class="fas fa-check"></i> Success! Redirecting...</span>';
+                        submitBtn.style.background = '#10b981';
+                        
+                        // Redirect to admin dashboard
+                        setTimeout(() => {
+                            window.location.href = '/admin/dashboard';
+                        }, 2000);
                     } else {
                         throw new Error(data.message || 'Invalid credentials. Please try again.');
                     }
@@ -506,7 +501,7 @@
                 
                 try {
                     // Make login request to backend
-                    const response = await fetch('http://localhost:3000/api/auth/login', {
+                    const response = await fetch('http://localhost:3001/api/auth/admin/login', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json',
@@ -519,24 +514,19 @@
                     
                     const data = await response.json();
                     
-                    if (response.ok && data.success) {
-                        // Check if user is admin
-                        if (data.user && data.user.role === 'admin') {
-                            // Store authentication data
-                            localStorage.setItem('adminToken', data.token);
-                            localStorage.setItem('adminUser', JSON.stringify(data.user));
-                            
-                            // Show success message
-                            submitBtn.textContent = 'Success! Redirecting...';
-                            submitBtn.style.background = '#10b981';
-                            
-                            // Redirect to admin dashboard
-                            setTimeout(() => {
-                                window.location.href = '/admin/dashboard';
-                            }, 1000);
-                        } else {
-                            throw new Error('Access denied. Admin credentials required.');
-                        }
+                    if (response.ok && data.accessToken) {
+                        // Store authentication data (admin login returns different structure)
+                        localStorage.setItem('adminToken', data.accessToken);
+                        localStorage.setItem('adminUser', JSON.stringify(data.admin));
+                        
+                        // Show success message
+                        submitBtn.textContent = 'Success! Redirecting...';
+                        submitBtn.style.background = '#10b981';
+                        
+                        // Redirect to admin dashboard
+                        setTimeout(() => {
+                            window.location.href = '/admin/dashboard';
+                        }, 1000);
                     } else {
                         throw new Error(data.message || 'Invalid credentials. Please try again.');
                     }
