@@ -236,7 +236,7 @@ export default function App() {
         <View style={styles.featureRow}>
   <TouchableOpacity 
     style={styles.featureCard}
-    onPress={() => Linking.openURL("http://192.168.1.36:3000/")}
+    onPress={() => Linking.openURL("http://10.0.2.16:3000/")}
     activeOpacity={0.7}
   >
     <Text style={styles.featureIcon}>🔔</Text>
@@ -245,7 +245,7 @@ export default function App() {
 
   <TouchableOpacity 
     style={styles.featureCard}
-    onPress={() => Linking.openURL("http://192.168.1.36:8501/")}
+    onPress={() => Linking.openURL("http://192.168.1.35:8501/")}
     activeOpacity={0.7}
   >
     <Text style={styles.featureIcon}>🤖</Text>
