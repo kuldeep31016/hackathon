@@ -9,12 +9,15 @@ router.post('/consultations', async (req, res) => {
   try {
     console.log('📱 NEW CONSULTATION BOOKING REQUEST:');
     console.log('Request Headers:', req.headers);
-    console.log('Request Body:', req.body);
+    console.log('Request Body:', JSON.stringify(req.body, null, 2));
+    console.log('Doctor Details received:', req.body.doctorDetails);
+    console.log('Patient Details received:', req.body.patientDetails);
     console.log('---');
 
     const {
       bookingId,
       doctorId,
+      doctorDetails,
       patientDetails,
       consultationType,
       specialty,
@@ -33,6 +36,7 @@ router.post('/consultations', async (req, res) => {
     const booking = new ConsultationBooking({
       bookingId: finalBookingId,
       doctorId, // Can now be number or ObjectId
+      doctorDetails, // Include complete doctor information
       patientDetails,
       consultationType,
       specialty,

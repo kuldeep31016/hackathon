@@ -44,6 +44,14 @@ const ConfirmationScreen = ({
   const [showRating, setShowRating] = useState(false);
 
   console.log('🔍 Component render - bookingId:', bookingId);
+  
+  // Debug: Log all props to see what data we're receiving
+  console.log('🔍 DEBUG - Props received by ConfirmationScreen:');
+  console.log('  - doctor:', doctor);
+  console.log('  - personalDetails:', personalDetails);
+  console.log('  - consultationType:', consultationType);
+  console.log('  - paymentDetails:', paymentDetails);
+  console.log('  - symptoms:', symptoms);
 
   const translations = {
     en: {
@@ -202,10 +210,25 @@ const ConfirmationScreen = ({
       }
 
       console.log('🆔 Using booking ID for backend:', currentBookingId);
+      console.log('🔍 DEBUG - Raw props before processing:');
+      console.log('  - doctor object:', JSON.stringify(doctor, null, 2));
+      console.log('  - personalDetails object:', JSON.stringify(personalDetails, null, 2));
 
       const bookingData = {
         bookingId: currentBookingId,
         doctorId: doctor?._id || doctor?.id,
+        // Include complete doctor information
+        doctorDetails: {
+          name: doctor?.name || 'Unknown Doctor',
+          specialization: doctor?.specialization || doctor?.specialty || 'General Medicine',
+          qualification: doctor?.education || doctor?.qualification || 'MBBS',
+          experience: doctor?.experience || 0,
+          rating: doctor?.rating || 0,
+          consultationFee: doctor?.fees?.[consultationType?.toLowerCase()] || doctor?.consultationFee || 500,
+          avatar: doctor?.avatar || doctor?.profileImage || null,
+          languages: doctor?.languages || ['English'],
+          totalConsultations: doctor?.totalConsultations || 0
+        },
         patientDetails: {
           name: personalDetails?.name || 'Patient',
           phone: personalDetails?.phone || '',
@@ -262,10 +285,25 @@ const ConfirmationScreen = ({
   const saveBookingToBackendWithId = async (bookingIdToUse) => {
     try {
       console.log('🆔 Using booking ID for backend:', bookingIdToUse);
+      console.log('🔍 DEBUG - Raw props before processing:');
+      console.log('  - doctor object:', JSON.stringify(doctor, null, 2));
+      console.log('  - personalDetails object:', JSON.stringify(personalDetails, null, 2));
 
       const bookingData = {
         bookingId: bookingIdToUse,
         doctorId: doctor?._id || doctor?.id,
+        // Include complete doctor information
+        doctorDetails: {
+          name: doctor?.name || 'Unknown Doctor',
+          specialization: doctor?.specialization || doctor?.specialty || 'General Medicine',
+          qualification: doctor?.education || doctor?.qualification || 'MBBS',
+          experience: doctor?.experience || 0,
+          rating: doctor?.rating || 0,
+          consultationFee: doctor?.fees?.[consultationType?.toLowerCase()] || doctor?.consultationFee || 500,
+          avatar: doctor?.avatar || doctor?.profileImage || null,
+          languages: doctor?.languages || ['English'],
+          totalConsultations: doctor?.totalConsultations || 0
+        },
         patientDetails: {
           name: personalDetails?.name || 'Patient',
           phone: personalDetails?.phone || '',
@@ -517,7 +555,7 @@ Download Nabha Health App for more features.
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>{t.patientName}:</Text>
           <Text style={styles.detailValue}>
-            {personalDetails?.firstName} {personalDetails?.lastName}
+            {personalDetails?.name || `${personalDetails?.firstName} ${personalDetails?.lastName}`.trim()}
           </Text>
         </View>
 
@@ -533,7 +571,7 @@ Download Nabha Health App for more features.
 
         <View style={styles.detailRow}>
           <Text style={styles.detailLabel}>{t.phone}:</Text>
-          <Text style={styles.detailValue}>{personalDetails?.phoneNumber}</Text>
+          <Text style={styles.detailValue}>{personalDetails?.phone || personalDetails?.phoneNumber}</Text>
         </View>
 
         {symptoms?.description && (

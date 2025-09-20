@@ -3063,7 +3063,9 @@
                 const gridElement = document.getElementById('bookingsGrid');
                 
                 gridElement.innerHTML = bookings.map(booking => {
-                    const doctorInitial = booking.doctorId?.name ? booking.doctorId.name.charAt(0).toUpperCase() : 'D';
+                    // Use doctorDetails if available, fallback to doctorId
+                    const doctor = booking.doctorDetails || booking.doctorId || {};
+                    const doctorInitial = doctor.name ? doctor.name.charAt(0).toUpperCase() : 'D';
                     const appointmentDate = new Date(booking.appointmentTime);
                     const bookedDate = new Date(booking.bookedAt);
                     
@@ -3079,8 +3081,8 @@
                             <div class="doctor-info">
                                 <div class="doctor-avatar">${doctorInitial}</div>
                                 <div class="doctor-details">
-                                    <h4>${booking.doctorId?.name || 'Unknown Doctor'}</h4>
-                                    <p>${booking.specialty || booking.doctorId?.specialization || 'General Medicine'}</p>
+                                    <h4>${doctor.name || 'Unknown Doctor'}</h4>
+                                    <p>${doctor.specialization || doctor.specialty || booking.specialty || 'General Medicine'}</p>
                                 </div>
                             </div>
                             

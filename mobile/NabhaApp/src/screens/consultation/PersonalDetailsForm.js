@@ -274,11 +274,34 @@ const PersonalDetailsForm = ({ language, onNext, onBack }) => {
     setIsValidating(true);
     
     if (validateForm()) {
+      // Format the data to match the expected structure
+      const personalDetails = {
+        name: `${formData.firstName} ${formData.lastName}`.trim(),
+        phone: formData.phoneNumber,
+        age: parseInt(formData.age) || 0,
+        gender: formData.gender,
+        email: '', // Add email field if needed
+        emergencyContact: formData.emergencyContact,
+        address: formData.address,
+        city: formData.city,
+        state: formData.state,
+        pincode: formData.pincode,
+        aadharNumber: formData.aadharNumber,
+        bloodGroup: formData.bloodGroup,
+      };
+      
+      console.log('📝 PersonalDetailsForm - Sending data:', personalDetails);
+      
       // Save form data and proceed
       Alert.alert(
         'Details Saved',
         'Your personal details have been saved successfully.',
-        [{ text: 'OK', onPress: onNext }]
+        [{ 
+          text: 'OK', 
+          onPress: () => {
+            onNext(personalDetails);
+          }
+        }]
       );
     } else {
       Alert.alert('Validation Error', t.formValidation);

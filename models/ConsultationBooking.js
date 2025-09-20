@@ -10,6 +10,18 @@ const consultationBookingSchema = new mongoose.Schema({
     type: mongoose.Schema.Types.Mixed, // Allow both ObjectId and Number
     required: true
   },
+  // Include complete doctor information for admin dashboard
+  doctorDetails: {
+    name: String,
+    specialization: String,
+    qualification: String,
+    experience: Number,
+    rating: Number,
+    consultationFee: Number,
+    avatar: String,
+    languages: [String],
+    totalConsultations: Number
+  },
   patientDetails: {
     name: String,
     phone: String,

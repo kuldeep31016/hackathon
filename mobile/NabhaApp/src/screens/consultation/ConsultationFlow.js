@@ -53,8 +53,13 @@ const ConsultationFlow = ({ isVisible, onClose, language = 'en' }) => {
   const t = translations[language];
   const totalSteps = 8;
 
-  const updateConsultationData = (step, data) => {
-    setConsultationData(prev => ({ ...prev, ...data }));
+  const updateConsultationData = (key, data) => {
+    console.log(`🔄 Updating consultation data - ${key}:`, data);
+    setConsultationData(prev => {
+      const updated = { ...prev, [key]: data };
+      console.log('🔄 Updated consultation data:', updated);
+      return updated;
+    });
   };
 
   const goToNextStep = () => {
@@ -88,7 +93,7 @@ const ConsultationFlow = ({ isVisible, onClose, language = 'en' }) => {
             language={language}
             selectedSpecialty={consultationData.selectedSpecialty}
             onSelect={(specialty) => {
-              updateConsultationData('specialty', { selectedSpecialty: specialty });
+              updateConsultationData('selectedSpecialty', specialty);
               goToNextStep();
             }}
           />
@@ -99,7 +104,7 @@ const ConsultationFlow = ({ isVisible, onClose, language = 'en' }) => {
             language={language}
             selectedType={consultationData.consultationType}
             onSelect={(type) => {
-              updateConsultationData('type', { consultationType: type });
+              updateConsultationData('consultationType', type);
               goToNextStep();
             }}
           />
@@ -110,7 +115,7 @@ const ConsultationFlow = ({ isVisible, onClose, language = 'en' }) => {
             language={language}
             symptomsData={consultationData.symptoms}
             onSubmit={(symptoms) => {
-              updateConsultationData('symptoms', { symptoms });
+              updateConsultationData('symptoms', symptoms);
               goToNextStep();
             }}
           />
@@ -121,7 +126,7 @@ const ConsultationFlow = ({ isVisible, onClose, language = 'en' }) => {
             language={language}
             documents={consultationData.documents}
             onNext={(documents) => {
-              updateConsultationData('documents', { documents });
+              updateConsultationData('documents', documents);
               goToNextStep();
             }}
             onBack={goToPreviousStep}
@@ -133,7 +138,7 @@ const ConsultationFlow = ({ isVisible, onClose, language = 'en' }) => {
             language={language}
             personalDetails={consultationData.personalDetails}
             onNext={(details) => {
-              updateConsultationData('details', { personalDetails: details });
+              updateConsultationData('personalDetails', details);
               goToNextStep();
             }}
             onBack={goToPreviousStep}
@@ -147,7 +152,7 @@ const ConsultationFlow = ({ isVisible, onClose, language = 'en' }) => {
             consultationType={consultationData.consultationType}
             selectedDoctor={consultationData.selectedDoctor}
             onNext={(doctor) => {
-              updateConsultationData('doctor', { selectedDoctor: doctor });
+              updateConsultationData('selectedDoctor', doctor);
               goToNextStep();
             }}
             onBack={goToPreviousStep}
@@ -160,13 +165,20 @@ const ConsultationFlow = ({ isVisible, onClose, language = 'en' }) => {
             doctor={consultationData.selectedDoctor}
             consultationType={consultationData.consultationType}
             onNext={(paymentStatus) => {
-              updateConsultationData('payment', { paymentStatus });
+              updateConsultationData('paymentStatus', paymentStatus);
               goToNextStep();
             }}
             onBack={goToPreviousStep}
           />
         );
       case 8:
+        console.log('🎯 Passing to ConfirmationScreen:', {
+          doctor: consultationData.selectedDoctor,
+          personalDetails: consultationData.personalDetails,
+          symptoms: consultationData.symptoms,
+          consultationType: consultationData.consultationType,
+          paymentDetails: consultationData.paymentStatus
+        });
         return (
           <ConfirmationScreen
             language={language}
